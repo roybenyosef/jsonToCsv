@@ -1,4 +1,6 @@
 package com.jsonToCsv;
+import com.jsonToCsv.IO.CsvWriter;
+import com.jsonToCsv.IO.JsonReader;
 import com.jsonToCsv.dataObjects.Results;
 
 public class JsonToCsv {
@@ -8,6 +10,7 @@ public class JsonToCsv {
 
     public static void main(String[] args) {
         try {
+            System.out.println("System encoding: " + java.nio.charset.Charset.defaultCharset());
             readCommandLineArgs(args);
             printWelcomeMessage();
             var jsonReader = new JsonReader();
@@ -18,7 +21,6 @@ public class JsonToCsv {
         catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
-
     }
 
     private static void readCommandLineArgs(String[] args) {
