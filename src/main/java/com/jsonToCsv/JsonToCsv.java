@@ -39,7 +39,7 @@ public class JsonToCsv {
         System.out.println("|     BUNNY     |");
         System.out.println("| ＿＿＿＿＿__|");
         System.out.println("                (\\__/) ||");
-        System.out.println("        (•ㅅ•) || ");
+        //System.out.println("        (•ㅅ•) || ");
         //System.out.println("/ 　 づ");
     }
 }

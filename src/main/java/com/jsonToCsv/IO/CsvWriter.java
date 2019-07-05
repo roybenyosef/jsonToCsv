@@ -2,10 +2,13 @@ package com.jsonToCsv.IO;
 
 import com.jsonToCsv.dataObjects.Datum;
 import com.jsonToCsv.dataObjects.Results;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class CsvWriter {
 
@@ -19,89 +22,120 @@ public class CsvWriter {
 
     public void write() throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
-        String header = getHeader(stringBuilder);
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
-            writer.write(header);
+        CSVFormat csvFormat = CSVFormat.EXCEL
+                .withHeader(
+                        "objType",
+                        "data_id",
+                        "data_q",
+                        "data_text_content",
+                        "data_name",
+                        "data_tagslist",
+                        "time",
+                        "archive",
+                        "anonflg",
+                        "super_anonflg",
+                        "userid",
+                        "photo",
+                        "ask_type",
+                        "photo_type",
+                        "bit_settings",
+                        "q_link",
+                        "revision_flg",
+                        "city_id",
+                        "answer_count",
+                        "pin_count",
+                        "user_pinned",
+                        "safefilter",
+                        "channel_id",
+                        "extra_photo_id",
+                        "extra_content_image_url_small",
+                        "extra_content_image_url_medium",
+                        "extra_content_image_creator_name",
+                        "extra_content_image_creator_username",
+                        "extra_content_image_",
+                        "extra_hebrew_time",
+                        "extra_url",
+                        "extra_url_title",
+                        "extra_item_profile_nickname",
+                        "extra_item_profile_anonflg",
+                        "extra_item_profile_active",
+                        "meta_active",
+                        "meta_permissions_edit",
+                        "meta_permissions_delete",
+                        "meta_permissions_deleteWithoutMsg",
+                        "meta_permissions_ban",
+                        "meta_permissions_report",
+                        "meta_permissions_showAdminMsgs",
+                        "meta_permissions_",
+                        "meta_permissions_itemOwner",
+                        "meta_permissions_restore",
+                        "meta_permissions_removeFromChannel",
+                        "meta_moreUserDetails_userid",
+                        "meta_moreUserDetails_ip");
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile));
+             CSVPrinter csvPrinter = new CSVPrinter(writer, csvFormat)) {
+
             for(Datum datum : results.getData()) {
-                stringBuilder.setLength(0);
-                stringBuilder
-                        .append(datum.getObjType())
-                        .append(datum.getData().getId()).append(',')
-                        .append(datum.getData().getQ()).append(',')
-                        .append(datum.getData().getTextContent()).append(',')
-                        .append(String.join(",", datum.getData().getTagslist())).append(',')
-                        .append(datum.getData().getTime()).append(',')
-                        .append(datum.getData().getArchive()).append(',')
-                        .append(datum.getData().getAnonflg()).append(',')
-                        .append(datum.getData().getSuperAnonflg()).append(',')
-                        .append(datum.getData().getUserid()).append(',')
-                        .append(datum.getData().getPhoto()).append(',')
-                        .append(datum.getData().getBitSettings()).append(',')
-                        .append(datum.getData().getQLink()).append(',')
-                        .append(datum.getData().getRevisionFlg()).append(',')
-                        .append(datum.getData().getCityId()).append(',')
-                        .append(datum.getData().getAnswerCount()).append(',')
-                        .append(datum.getData().getPinCount()).append(',')
-                        .append(datum.getData().getUserPinned()).append(',')
-                        .append(datum.getData().getSafefilter()).append(',')
-                        .append(datum.getData().getChannelId()).append(',');
-
-                writer.write(stringBuilder.toString());
+                csvPrinter.printRecord(
+                        datum.getObjType(),
+                        datum.getData().getId(),
+                        sanitizeString(datum.getData().getQ()),
+                        sanitizeString(datum.getData().getTextContent()),
+                        sanitizeString(String.join("|", datum.getData().getTagslist())),
+                        datum.getData().getTime(),
+                        datum.getData().getArchive(),
+                        datum.getData().getAnonflg(),
+                        datum.getData().getSuperAnonflg(),
+                        datum.getData().getUserid(),
+                        sanitizeString(datum.getData().getPhoto()),
+                        datum.getData().getBitSettings(),
+                        sanitizeString(datum.getData().getQLink()),
+                        datum.getData().getRevisionFlg(),
+                        datum.getData().getCityId(),
+                        datum.getData().getAnswerCount(),
+                        datum.getData().getPinCount(),
+                        datum.getData().getUserPinned(),
+                        datum.getData().getSafefilter(),
+                        datum.getData().getChannelId(),
+                        sanitizeObject(datum.getExtra().getPhotoId()),
+                        datum.getExtra().getContentImage().getUrlSmall(),
+                        datum.getExtra().getContentImage().getUrlMedium());
+                        //sanitizeString(datum.getExtra().getContentImage().getCreatorName()),
+                        //sanitizeString(datum.getExtra().getContentImage().getCreatorUsername()));
+//                        datum.getExtra().getHebrewTime(),
+//                        datum.getExtra().getUrl(),
+//                        sanitizeString(datum.getExtra().getUrlTitle()),
+//                        sanitizeString(datum.getExtra().getItemProfile().getNickname()),
+//                        datum.getExtra().getItemProfile().getAnonflg(),
+//                        datum.getExtra().getItemProfile().getActive(),
+//                        datum.getMeta().getActive(),
+//                        datum.getMeta().getPermissions().getEdit(),
+//                        datum.getMeta().getPermissions().getDelete(),
+//                        datum.getMeta().getPermissions().getDeleteWithoutMsg(),
+//                        datum.getMeta().getPermissions().getBan(),
+//                        datum.getMeta().getPermissions().getReport(),
+//                        datum.getMeta().getPermissions().getShowAdminMsgs(),
+//                        datum.getMeta().getPermissions().getItemOwner(),
+//                        datum.getMeta().getPermissions().getRestore(),
+//                        datum.getMeta().getPermissions().getRemoveFromChannel(),
+//                        datum.getMeta().getMoreUserDetails().getUserid(),
+//                        datum.getMeta().getMoreUserDetails().getIp());
             }
         }
     }
 
-    private String getHeader(StringBuilder stringBuilder) {
-        return stringBuilder
-                .append("objType,")
-                .append("data_id,")
-                .append("data_q,")
-                .append("data_text_content,")
-                .append("data_name,")
-                .append("data_tagslist,")
-                .append("time,")
-                .append("archive,")
-                .append("anonflg,")
-                .append("super_anonflg,")
-                .append("userid,")
-                .append("photo,")
-                .append("ask_type,")
-                .append("photo_type,")
-                .append("bit_settings,")
-                .append("q_link,")
-                .append("revision_flg,")
-                .append("city_id,")
-                .append("answer_count,")
-                .append("pin_count")
-                .append("user_pinned")
-                .append("safefilter")
-                .append("channel_id")
-                .append("extra_photo_id,")
-                .append("extra_content_image_url_small,")
-                .append("extra_content_image_url_medium,")
-                .append("extra_content_image_creator_name,")
-                .append("extra_content_image_creator_username,")
-                .append("extra_content_image_,")
-                .append("extra_hebrew_time,")
-                .append("extra_url,")
-                .append("extra_url_title,")
-                .append("extra_item_profile_nickname,")
-                .append("extra_item_profile_anonflg,")
-                .append("extra_item_profile_active,")
-                .append("meta_active,")
-                .append("meta_permissions_edit,")
-                .append("meta_permissions_delete,")
-                .append("meta_permissions_deleteWithoutMsg,")
-                .append("meta_permissions_ban,")
-                .append("meta_permissions_report,")
-                .append("meta_permissions_showAdminMsgs,")
-                .append("meta_permissions_,")
-                .append("meta_permissions_itemOwner,")
-                .append("meta_permissions_restore,")
-                .append("meta_permissions_removeFromChannel,")
-                .append("meta_moreUserDetails_userid,")
-                .append("meta_moreUserDetails_ip,").toString();
+    String sanitizeString(String value) {
+        if (value == null) {
+            return "null";
+        }
+        return value.replace('\r', ' ')
+                .replace('\n', ' ')
+                .replace('"', '\'');
     }
 
+    String sanitizeObject(Object obj) {
+        return obj == null ? "null" : obj.toString();
+    }
 }
