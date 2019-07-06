@@ -1,7 +1,6 @@
 package com.jsonToCsv.IO;
 
-import com.jsonToCsv.dataObjects.Datum;
-import com.jsonToCsv.dataObjects.Results;
+import com.jsonToCsv.dataObjects.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
@@ -21,9 +20,8 @@ public class CsvWriter {
     }
 
     public void write() throws IOException {
-        StringBuilder stringBuilder = new StringBuilder();
-
         CSVFormat csvFormat = CSVFormat.EXCEL
+                .withNullString("null")
                 .withHeader(
                         "objType",
                         "data_id",
@@ -78,6 +76,7 @@ public class CsvWriter {
              CSVPrinter csvPrinter = new CSVPrinter(writer, csvFormat)) {
 
             for(Datum datum : results.getData()) {
+                fillNulls(datum);
                 csvPrinter.printRecord(
                         datum.getObjType(),
                         datum.getData().getId(),
@@ -101,28 +100,58 @@ public class CsvWriter {
                         datum.getData().getChannelId(),
                         sanitizeObject(datum.getExtra().getPhotoId()),
                         datum.getExtra().getContentImage().getUrlSmall(),
-                        datum.getExtra().getContentImage().getUrlMedium());
-                        //sanitizeString(datum.getExtra().getContentImage().getCreatorName()),
-                        //sanitizeString(datum.getExtra().getContentImage().getCreatorUsername()));
-//                        datum.getExtra().getHebrewTime(),
-//                        datum.getExtra().getUrl(),
-//                        sanitizeString(datum.getExtra().getUrlTitle()),
-//                        sanitizeString(datum.getExtra().getItemProfile().getNickname()),
-//                        datum.getExtra().getItemProfile().getAnonflg(),
-//                        datum.getExtra().getItemProfile().getActive(),
-//                        datum.getMeta().getActive(),
-//                        datum.getMeta().getPermissions().getEdit(),
-//                        datum.getMeta().getPermissions().getDelete(),
-//                        datum.getMeta().getPermissions().getDeleteWithoutMsg(),
-//                        datum.getMeta().getPermissions().getBan(),
-//                        datum.getMeta().getPermissions().getReport(),
-//                        datum.getMeta().getPermissions().getShowAdminMsgs(),
-//                        datum.getMeta().getPermissions().getItemOwner(),
-//                        datum.getMeta().getPermissions().getRestore(),
-//                        datum.getMeta().getPermissions().getRemoveFromChannel(),
-//                        datum.getMeta().getMoreUserDetails().getUserid(),
-//                        datum.getMeta().getMoreUserDetails().getIp());
+                        datum.getExtra().getContentImage().getUrlMedium(),
+                        sanitizeString(datum.getExtra().getContentImage().getCreatorName()),
+                        sanitizeString(datum.getExtra().getContentImage().getCreatorUsername()),
+                        datum.getExtra().getHebrewTime(),
+                        datum.getExtra().getUrl(),
+                        sanitizeString(datum.getExtra().getUrlTitle()),
+                        sanitizeString(datum.getExtra().getItemProfile().getNickname()),
+                        datum.getExtra().getItemProfile().getAnonflg(),
+                        datum.getExtra().getItemProfile().getActive(),
+                        datum.getMeta().getActive(),
+                        datum.getMeta().getPermissions().getEdit(),
+                        datum.getMeta().getPermissions().getDelete(),
+                        datum.getMeta().getPermissions().getDeleteWithoutMsg(),
+                        datum.getMeta().getPermissions().getBan(),
+                        datum.getMeta().getPermissions().getReport(),
+                        datum.getMeta().getPermissions().getShowAdminMsgs(),
+                        datum.getMeta().getPermissions().getItemOwner(),
+                        datum.getMeta().getPermissions().getRestore(),
+                        datum.getMeta().getPermissions().getRemoveFromChannel(),
+                        datum.getMeta().getMoreUserDetails().getUserid(),
+                        datum.getMeta().getMoreUserDetails().getIp());
             }
+        }
+    }
+
+    private void fillNulls(Datum datum) {
+        if (datum.getData() == null) {
+            datum.setData(new Data());
+        }
+
+        if (datum.getExtra() == null) {
+            datum.setExtra(new Extra());
+        }
+
+        if (datum.getExtra().getContentImage() == null) {
+            datum.getExtra().setContentImage(new ContentImage());
+        }
+
+        if (datum.getExtra().getItemProfile() == null) {
+            datum.getExtra().setItemProfile(new ItemProfile());
+        }
+
+        if (datum.getMeta() == null) {
+            datum.setMeta(new Meta());
+        }
+
+        if (datum.getMeta().getMoreUserDetails() == null) {
+            datum.getMeta().setMoreUserDetails(new MoreUserDetails());
+        }
+
+        if (datum.getMeta().getPermissions() == null) {
+            datum.getMeta().setPermissions(new Permissions());
         }
     }
 
@@ -135,7 +164,7 @@ public class CsvWriter {
                 .replace('"', '\'');
     }
 
-    String sanitizeObject(Object obj) {
-        return obj == null ? "null" : obj.toString();
+    Object sanitizeObject(Object obj) {
+        return obj == null ? "null" : obj;
     }
 }
