@@ -5,8 +5,8 @@ import com.jsonToCsv.dataObjects.Results;
 
 public class JsonToCsv {
 
-    static String jsonFile;
-    static String outputFile;
+    static private String jsonFile;
+    static private String outputFile;
 
     public static void main(String[] args) {
         try {
@@ -33,13 +33,6 @@ public class JsonToCsv {
     }
 
     private static void printWelcomeMessage() {
-        System.out.println("|￣￣￣￣￣￣ |");
-        System.out.println("|     WHAT       |");
-        System.out.println("|    IS SIGN      | ");
-        System.out.println("|     BUNNY     |");
-        System.out.println("| ＿＿＿＿＿__|");
-        System.out.println("                (\\__/) ||");
-        //System.out.println("        (•ㅅ•) || ");
-        //System.out.println("/ 　 づ");
+
     }
 }
