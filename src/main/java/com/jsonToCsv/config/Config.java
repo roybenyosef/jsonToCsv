@@ -1,6 +1,6 @@
 package com.jsonToCsv.config;
 
 public class Config {
-    public int maxTags = 5;
-    public boolean writeBomToCsv = false;
+    public final int MAX_TAGS = 5;
+    public boolean writeBomToCsv = true;
 }

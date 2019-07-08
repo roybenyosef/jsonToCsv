@@ -7,6 +7,7 @@ import com.jsonToCsv.dataObjects.Results;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class JsonToCsv {
@@ -21,13 +22,16 @@ public class JsonToCsv {
             readConfig(args);
             printWelcomeMessage();
             var jsonReader = new JsonReader();
+            System.out.println("Reading json file...");
             Results results = jsonReader.read(jsonFile);
             CsvWriter csvWriter = new CsvWriter(config, results, outputFile);
+            System.out.println("Writing csv output file...");
             csvWriter.write();
         }
         catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
+        System.out.println("All done.");
     }
 
     private static void readConfig(String[] args) {
@@ -36,22 +40,22 @@ public class JsonToCsv {
     }
 
     private static void readApplicationConfig() {
-        try {
-            String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-            String appConfigPath = rootPath + "application.properties";
-            Properties appProps = new Properties();
-            appProps.load(new FileInputStream(appConfigPath));
-            config.maxTags = Integer.parseInt(appProps.getProperty("csv.maxtags"));
-            config.writeBomToCsv = Boolean.parseBoolean(appProps.getProperty("csv.writebom"));
+        System.out.println("Reading app configuration");
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        Properties properties = new Properties();
+        try (InputStream resourceStream = loader.getResourceAsStream("application.properties")) {
+            properties.load(resourceStream);
+            config.writeBomToCsv = Boolean.parseBoolean(properties.getProperty("csv.writebom"));
         }
-        catch (IOException | NullPointerException ex) {
-            System.out.println("Error reading configuration: " + ex.getMessage());
+        catch (Exception e) {
+            System.out.println("Error reading configuration: " + e.getMessage());
             System.out.println("Using default values");
-            System.out.println("maxtags = " + config.maxTags + ", writebom: " + config.writeBomToCsv);
         }
+        System.out.println("Configuration: write bom: " + config.writeBomToCsv);
     }
 
     private static void readCommandLineArgs(String[] args) {
+        System.out.println("Reading command line arguments");
         if (args.length != 2) {
             throw new IllegalArgumentException("Usage: JsonToCsv <jsonfile> <output file name>");
         }

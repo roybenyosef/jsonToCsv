@@ -8,8 +8,10 @@ import org.apache.commons.csv.CSVPrinter;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class CsvWriter {
@@ -38,8 +40,13 @@ public class CsvWriter {
                         "data_q",
                         "data_text_content",
                         "data_name",
-                        "data_tagslist",
+                        "data_tagslist_item1",
+                        "data_tagslist_item2",
+                        "data_tagslist_item3",
+                        "data_tagslist_item4",
+                        "data_tagslist_item5",
                         "time",
+                        "date",
                         "archive",
                         "anonflg",
                         "super_anonflg",
@@ -85,14 +92,20 @@ public class CsvWriter {
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile));
              CSVPrinter csvPrinter = new CSVPrinter(writer, csvFormat)) {
             for(Datum datum : results.getData()) {
-                fillNulls(datum);
+                prepareDatum(datum);
                 csvPrinter.printRecord(
                         datum.getObjType(),
                         datum.getData().getId(),
                         sanitizeString(datum.getData().getQ()),
                         sanitizeString(datum.getData().getTextContent()),
-                        sanitizeString(prepareTagList(datum.getData().getTagslist())),
-                        datum.getData().getTime(),
+                        sanitizeString(datum.getData().getName()),
+                        sanitizeString(datum.getData().getTagslist().get(0)),
+                        sanitizeString(datum.getData().getTagslist().get(1)),
+                        sanitizeString(datum.getData().getTagslist().get(2)),
+                        sanitizeString(datum.getData().getTagslist().get(3)),
+                        sanitizeString(datum.getData().getTagslist().get(4)),
+                        extractDate(datum.getData().getTime()),
+                        extractTime(datum.getData().getTime()),
                         datum.getData().getArchive(),
                         datum.getData().getAnonflg(),
                         datum.getData().getSuperAnonflg(),
@@ -134,8 +147,28 @@ public class CsvWriter {
         }
     }
 
+    private String extractTime(String dateTime) {
+        return dateTime.substring(0, dateTime.indexOf(' '));
+    }
+
+    private String extractDate(String dateTime) {
+        return dateTime.substring(dateTime.indexOf(' ') + 1);
+    }
+
+    private void prepareDatum(Datum datum) {
+        fillNulls(datum);
+        padTags(datum);
+    }
+
+    private void padTags(Datum datum) {
+        List<String> tagsList = datum.getData().getTagslist();
+        for (int i = tagsList.size(); i < config.MAX_TAGS; ++i) {
+            tagsList.add("");
+        }
+    }
+
     private String prepareTagList(List<String> tagslist) {
-        List<String> paddedTagsList = new ArrayList<>(Collections.nCopies(Math.max(tagslist.size(), config.maxTags), "-"));
+        List<String> paddedTagsList = new ArrayList<>(Collections.nCopies(Math.max(tagslist.size(), config.MAX_TAGS), "-"));
         return String.join("|", tagslist);
     }
 
