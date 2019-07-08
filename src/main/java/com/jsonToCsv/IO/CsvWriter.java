@@ -1,29 +1,39 @@
 package com.jsonToCsv.IO;
 
+import com.jsonToCsv.config.Config;
 import com.jsonToCsv.dataObjects.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class CsvWriter {
 
+    private final String UTF8_BOM = "\uFEFF";
+
     private Results results;
     private String outputFile;
+    private Config config;
 
-    public CsvWriter(Results results, String outputFile) {
+    public CsvWriter(Config config, Results results, String outputFile) {
         this.results = results;
         this.outputFile = outputFile;
+        this.config = config;
     }
 
     public void write() throws IOException {
+
+        String fileBytesHeader = config.writeBomToCsv ? UTF8_BOM : "";
+
         CSVFormat csvFormat = CSVFormat.EXCEL
                 .withNullString("null")
                 .withHeader(
-                        "objType",
+                        fileBytesHeader + "objType",
                         "data_id",
                         "data_q",
                         "data_text_content",
@@ -74,7 +84,6 @@ public class CsvWriter {
 
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile));
              CSVPrinter csvPrinter = new CSVPrinter(writer, csvFormat)) {
-
             for(Datum datum : results.getData()) {
                 fillNulls(datum);
                 csvPrinter.printRecord(
@@ -82,7 +91,7 @@ public class CsvWriter {
                         datum.getData().getId(),
                         sanitizeString(datum.getData().getQ()),
                         sanitizeString(datum.getData().getTextContent()),
-                        sanitizeString(String.join("|", datum.getData().getTagslist())),
+                        sanitizeString(prepareTagList(datum.getData().getTagslist())),
                         datum.getData().getTime(),
                         datum.getData().getArchive(),
                         datum.getData().getAnonflg(),
@@ -125,6 +134,11 @@ public class CsvWriter {
         }
     }
 
+    private String prepareTagList(List<String> tagslist) {
+        List<String> paddedTagsList = new ArrayList<>(Collections.nCopies(Math.max(tagslist.size(), config.maxTags), "-"));
+        return String.join("|", tagslist);
+    }
+
     private void fillNulls(Datum datum) {
         if (datum.getData() == null) {
             datum.setData(new Data());
@@ -155,7 +169,7 @@ public class CsvWriter {
         }
     }
 
-    String sanitizeString(String value) {
+    private String sanitizeString(String value) {
         if (value == null) {
             return "null";
         }
@@ -164,7 +178,7 @@ public class CsvWriter {
                 .replace('"', '\'');
     }
 
-    Object sanitizeObject(Object obj) {
+    private Object sanitizeObject(Object obj) {
         return obj == null ? "null" : obj;
     }
 }
