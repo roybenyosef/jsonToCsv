@@ -129,7 +129,6 @@ public class CsvWriter {
                         "extra_content_image_url_medium",
                         "extra_content_image_creator_name",
                         "extra_content_image_creator_username",
-                        "extra_content_image_",
                         "extra_hebrew_time",
                         "extra_url",
                         "extra_url_title",
