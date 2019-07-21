@@ -1,5 +1,6 @@
 package com.jsonToCsv.IO;
 
+import com.jsonToCsv.JsonToCsvConsts;
 import com.jsonToCsv.config.Config;
 import com.jsonToCsv.dataObjects.*;
 import org.apache.commons.csv.CSVFormat;
@@ -14,8 +15,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class CsvWriter {
-
-    private final String UTF8_BOM = "\uFEFF";
 
     private Appendable writer;
     private Results results;
@@ -52,6 +51,8 @@ public class CsvWriter {
                         datum.getData().getSuperAnonflg(),
                         datum.getData().getUserid(),
                         sanitizeString(datum.getData().getPhoto()),
+                        datum.getData().getAskType(),
+                        datum.getData().getPhotoType(),
                         datum.getData().getBitSettings(),
                         sanitizeString(datum.getData().getQLink()),
                         datum.getData().getRevisionFlg(),
@@ -90,7 +91,7 @@ public class CsvWriter {
 
     public CSVFormat getCsvFormat() {
 
-        String fileBytesHeader = config.writeBomToCsv ? UTF8_BOM : "";
+        String fileBytesHeader = config.writeBomToCsv ? JsonToCsvConsts.UTF8_BOM : "";
 
         return CSVFormat.EXCEL
                 .withNullString("null")
