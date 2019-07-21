@@ -6,15 +6,15 @@
 			"objType": "ask",
 			"data": {
 				"id": 7324927,
-				"q": "אני מרגישה שעושים עליי חרם באתר! (בבקשה תקראו זה חשוב לי)",
-				"text_content": "אני יודעת שזה רק אתר אינטרנט והכל, אבל אני פה כבר 3 שנים, אני משקיעה בתשובות שלי ולא מצפה לקבל כלום בתמורה, אבל שמתי לב שכמעט כולם מדלגים עליי בפרחים, גם אם אני עונה ראשונה, תמיד יתנו לאלה שאחרי ופשוט מדלגים עליי (אני לא עונה בשביל פרחים, אבל השקעתי מזמני כל כך הרבה וכל מה שאני מקבלת זה קללות בקיר התודות)\n\nכדאי לפרוש? אני אוהבת לעזור אבל קשה לי לראות את כל הקללות שכתבו לי",
-				"name": "אנונימית",
+				"q": "text of a question",
+				"text_content": "content text 1",
+				"name": "anonymous",
 				"tagslist": [
-					"כתיבה",
-					"ביקורת",
-					"חרם",
-					"עצות",
-					"חוות דעת"
+					"writing",
+					"review",
+					"ban",
+					"advise",
+					"consulting"
 				],
 				"time": "2019/04/18 13:06:53",
 				"archive": false,
@@ -42,11 +42,11 @@
 					"creator_name": "lvaro Serrano",
 					"creator_username": "alvaroserrano"
 				},
-				"hebrew_time": "19 דקות",
+				"hebrew_time": "19 min",
 				"url": "ask/7324927/%D7%90%D7%A0%D7%99-%D7%9E%D7%A8%D7%92%D7%99%D7%A9%D7%94-%D7%A9%D7%A2%D7%95%D7%A9%D7%99%D7%9D-%D7%A2%D7%9C%D7%99%D7%99-%D7%97%D7%A8%D7%9D",
-				"url_title": "אני-מרגישה-שעושים-עליי-חרם",
+				"url_title": "this is the title of the url",
 				"item_profile": {
-					"nickname": "אנונימית",
+					"nickname": "anonymous",
 					"anonflg": true,
 					"active": true
 				}

@@ -16,8 +16,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.*;
 
 public class CsvWriterTest {
 
@@ -83,42 +82,42 @@ public class CsvWriterTest {
 
     @Test
     public void q_isExpectedText() {
-        assertColumn(2, "data_q", "אני מרגישה שעושים עליי חרם באתר! (בבקשה תקראו זה חשוב לי)");
+        assertColumn(2, "data_q", "text of a question");
     }
 
     @Test
     public void text_content_isExpectedText() {
-        assertColumn(3, "data_text_content", "אני יודעת שזה רק אתר אינטרנט והכל, אבל אני פה כבר 3 שנים, אני משקיעה בתשובות שלי ולא מצפה לקבל כלום בתמורה, אבל שמתי לב שכמעט כולם מדלגים עליי בפרחים, גם אם אני עונה ראשונה, תמיד יתנו לאלה שאחרי ופשוט מדלגים עליי (אני לא עונה בשביל פרחים, אבל השקעתי מזמני כל כך הרבה וכל מה שאני מקבלת זה קללות בקיר התודות)  כדאי לפרוש? אני אוהבת לעזור אבל קשה לי לראות את כל הקללות שכתבו לי");
+        assertColumn(3, "data_text_content", "content text 1");
     }
 
     @Test
     public void name_isExpectedText() {
-        assertColumn(4, "data_name", "אנונימית");
+        assertColumn(4, "data_name", "anonymous");
     }
 
     @Test
     public void tag1_isExpectedText() {
-        assertColumn(5, "data_tagslist_item1", "כתיבה");
+        assertColumn(5, "data_tagslist_item1", "writing");
     }
 
     @Test
     public void tag2_isExpectedText() {
-        assertColumn(6, "data_tagslist_item2", "ביקורת");
+        assertColumn(6, "data_tagslist_item2", "review");
     }
 
     @Test
     public void tag3_isExpectedText() {
-        assertColumn(7, "data_tagslist_item3", "חרם");
+        assertColumn(7, "data_tagslist_item3", "ban");
     }
 
     @Test
     public void tag4_isExpectedText() {
-        assertColumn(8, "data_tagslist_item4", "עצות");
+        assertColumn(8, "data_tagslist_item4", "advise");
     }
 
     @Test
     public void tag5_isExpectedText() {
-        assertColumn(9, "data_tagslist_item5", "חוות דעת");
+        assertColumn(9, "data_tagslist_item5", "consulting");
     }
 
     @Test
@@ -239,7 +238,7 @@ public class CsvWriterTest {
 
     @Test
     public void hebrew_time_Is19Minutes() {
-        assertColumn(33,"extra_hebrew_time", "19 דקות");
+        assertColumn(33,"extra_hebrew_time", "19 min");
     }
 
     @Test
@@ -249,12 +248,12 @@ public class CsvWriterTest {
 
     @Test
     public void url_title_IsExpectedText() {
-        assertColumn(35,"extra_url_title", "אני-מרגישה-שעושים-עליי-חרם");
+        assertColumn(35,"extra_url_title", "this is the title of the url");
     }
 
     @Test
     public void nickname_IsAnonymous() {
-        assertColumn(36,"extra_item_profile_nickname", "אנונימית");
+        assertColumn(36,"extra_item_profile_nickname", "anonymous");
     }
 
     @Test
@@ -329,9 +328,9 @@ public class CsvWriterTest {
 
     @Test
     public void tagsList_lessThanFiveTags_isAutoFilled() {
-        assertEquals("חרם", csvRecords.get(2).get(5));
-        assertEquals("חברות", csvRecords.get(2).get(6));
-        assertEquals("חוות דעת", csvRecords.get(2).get(7));
+        assertFalse(csvRecords.get(2).get(5).isEmpty());
+        assertFalse(csvRecords.get(2).get(6).isEmpty());
+        assertFalse(csvRecords.get(2).get(7).isEmpty());
         assertEquals("", csvRecords.get(2).get(8));
         assertEquals("", csvRecords.get(2).get(9));
     }
