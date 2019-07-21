@@ -8,6 +8,7 @@ import org.apache.commons.csv.CSVPrinter;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -33,6 +34,9 @@ public class CsvWriter {
         try (CSVPrinter csvPrinter = new CSVPrinter(writer, csvFormat)) {
             for(Datum datum : results.getData()) {
                 prepareDatum(datum);
+
+                String fullUrl = getFullUrl(datum.getExtra().getUrl());
+
                 csvPrinter.printRecord(
                         datum.getObjType(),
                         datum.getData().getId(),
@@ -69,6 +73,7 @@ public class CsvWriter {
                         sanitizeString(datum.getExtra().getContentImage().getCreatorUsername()),
                         datum.getExtra().getHebrewTime(),
                         datum.getExtra().getUrl(),
+                        fullUrl,
                         sanitizeString(datum.getExtra().getUrlTitle()),
                         sanitizeString(datum.getExtra().getItemProfile().getNickname()),
                         datum.getExtra().getItemProfile().getAnonflg(),
@@ -87,6 +92,16 @@ public class CsvWriter {
                         datum.getMeta().getMoreUserDetails().getIp());
             }
         }
+    }
+
+    private String getFullUrl(String relativeURl) {
+        if (config.baseUrl.endsWith("/") || relativeURl.startsWith("/")) {
+            return config.baseUrl + relativeURl;
+        }
+        else {
+            return  config.baseUrl + "/" + relativeURl;
+        }
+
     }
 
     public CSVFormat getCsvFormat() {
@@ -131,6 +146,7 @@ public class CsvWriter {
                         "extra_content_image_creator_username",
                         "extra_hebrew_time",
                         "extra_url",
+                        "extra_full_url",
                         "extra_url_title",
                         "extra_item_profile_nickname",
                         "extra_item_profile_anonflg",
