@@ -5,9 +5,12 @@ import com.jsonToCsv.IO.JsonReader;
 import com.jsonToCsv.config.Config;
 import com.jsonToCsv.dataObjects.Results;
 
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class JsonToCsv {
@@ -24,9 +27,13 @@ public class JsonToCsv {
             var jsonReader = new JsonReader();
             System.out.println("Reading json file...");
             Results results = jsonReader.read(jsonFile);
-            CsvWriter csvWriter = new CsvWriter(config, results, outputFile);
-            System.out.println("Writing csv output file...");
-            csvWriter.write();
+
+            try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile)))
+            {
+                CsvWriter csvWriter = new CsvWriter(writer, config, results);
+                System.out.println("Writing csv output file...");
+                csvWriter.write();
+            }
         }
         catch (Exception ex) {
             System.out.println(ex.getMessage());

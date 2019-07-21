@@ -8,8 +8,7 @@ import java.io.IOException;
 
 public class JsonReader {
 
-    public Results read(String jsonFile)
-            throws IOException {
+    public Results read(String jsonFile) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(new File(jsonFile), Results.class);
     }

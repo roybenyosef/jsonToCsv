@@ -5,92 +5,33 @@ import com.jsonToCsv.dataObjects.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 public class CsvWriter {
 
     private final String UTF8_BOM = "\uFEFF";
 
+    private Appendable writer;
     private Results results;
-    private String outputFile;
     private Config config;
 
-    public CsvWriter(Config config, Results results, String outputFile) {
+    public CsvWriter(Appendable writer, Config config, Results results) {
+        this.writer = writer;
         this.results = results;
-        this.outputFile = outputFile;
         this.config = config;
     }
 
     public void write() throws IOException {
 
-        String fileBytesHeader = config.writeBomToCsv ? UTF8_BOM : "";
+        CSVFormat csvFormat = getCsvFormat();
 
-        CSVFormat csvFormat = CSVFormat.EXCEL
-                .withNullString("null")
-                .withHeader(
-                        fileBytesHeader + "objType",
-                        "data_id",
-                        "data_q",
-                        "data_text_content",
-                        "data_name",
-                        "data_tagslist_item1",
-                        "data_tagslist_item2",
-                        "data_tagslist_item3",
-                        "data_tagslist_item4",
-                        "data_tagslist_item5",
-                        "time",
-                        "date",
-                        "archive",
-                        "anonflg",
-                        "super_anonflg",
-                        "userid",
-                        "photo",
-                        "ask_type",
-                        "photo_type",
-                        "bit_settings",
-                        "q_link",
-                        "revision_flg",
-                        "city_id",
-                        "answer_count",
-                        "pin_count",
-                        "user_pinned",
-                        "safefilter",
-                        "channel_id",
-                        "extra_photo_id",
-                        "extra_content_image_url_small",
-                        "extra_content_image_url_medium",
-                        "extra_content_image_creator_name",
-                        "extra_content_image_creator_username",
-                        "extra_content_image_",
-                        "extra_hebrew_time",
-                        "extra_url",
-                        "extra_url_title",
-                        "extra_item_profile_nickname",
-                        "extra_item_profile_anonflg",
-                        "extra_item_profile_active",
-                        "meta_active",
-                        "meta_permissions_edit",
-                        "meta_permissions_delete",
-                        "meta_permissions_deleteWithoutMsg",
-                        "meta_permissions_ban",
-                        "meta_permissions_report",
-                        "meta_permissions_showAdminMsgs",
-                        "meta_permissions_",
-                        "meta_permissions_itemOwner",
-                        "meta_permissions_restore",
-                        "meta_permissions_removeFromChannel",
-                        "meta_moreUserDetails_userid",
-                        "meta_moreUserDetails_ip");
-
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile));
-             CSVPrinter csvPrinter = new CSVPrinter(writer, csvFormat)) {
+        try (CSVPrinter csvPrinter = new CSVPrinter(writer, csvFormat)) {
             for(Datum datum : results.getData()) {
                 prepareDatum(datum);
                 csvPrinter.printRecord(
@@ -145,6 +86,67 @@ public class CsvWriter {
                         datum.getMeta().getMoreUserDetails().getIp());
             }
         }
+    }
+
+    public CSVFormat getCsvFormat() {
+
+        String fileBytesHeader = config.writeBomToCsv ? UTF8_BOM : "";
+
+        return CSVFormat.EXCEL
+                .withNullString("null")
+                .withHeader(
+                        fileBytesHeader + "objType",
+                        "data_id",
+                        "data_q",
+                        "data_text_content",
+                        "data_name",
+                        "data_tagslist_item1",
+                        "data_tagslist_item2",
+                        "data_tagslist_item3",
+                        "data_tagslist_item4",
+                        "data_tagslist_item5",
+                        "time",
+                        "date",
+                        "archive",
+                        "anonflg",
+                        "super_anonflg",
+                        "userid",
+                        "photo",
+                        "ask_type",
+                        "photo_type",
+                        "bit_settings",
+                        "q_link",
+                        "revision_flg",
+                        "city_id",
+                        "answer_count",
+                        "pin_count",
+                        "user_pinned",
+                        "safefilter",
+                        "channel_id",
+                        "extra_photo_id",
+                        "extra_content_image_url_small",
+                        "extra_content_image_url_medium",
+                        "extra_content_image_creator_name",
+                        "extra_content_image_creator_username",
+                        "extra_content_image_",
+                        "extra_hebrew_time",
+                        "extra_url",
+                        "extra_url_title",
+                        "extra_item_profile_nickname",
+                        "extra_item_profile_anonflg",
+                        "extra_item_profile_active",
+                        "meta_active",
+                        "meta_permissions_edit",
+                        "meta_permissions_delete",
+                        "meta_permissions_deleteWithoutMsg",
+                        "meta_permissions_ban",
+                        "meta_permissions_report",
+                        "meta_permissions_showAdminMsgs",
+                        "meta_permissions_itemOwner",
+                        "meta_permissions_restore",
+                        "meta_permissions_removeFromChannel",
+                        "meta_moreUserDetails_userid",
+                        "meta_moreUserDetails_ip");
     }
 
     private String extractTime(String dateTime) {
