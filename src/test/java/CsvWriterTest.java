@@ -20,10 +20,10 @@ import static junit.framework.TestCase.*;
 
 public class CsvWriterTest {
 
-    List<CSVRecord> csvRecords;
-    String jsonInputFilePath;
-    Results jsonResults;
-    Config config = new Config();
+    private List<CSVRecord> csvRecords;
+    private String jsonInputFilePath;
+    private Results jsonResults;
+    private Config config = new Config();
 
     @Before
     public void setUp() {
@@ -247,83 +247,88 @@ public class CsvWriterTest {
     }
 
     @Test
+    public void full_url_IsExpectedLink() {
+        assertColumn(35,"extra_full_url", JsonToCsvConsts.DEFAULT_BASE_URL + "/" + "ask/7324927/%D7%90%D7%A0%D7%99-%D7%9E%D7%A8%D7%92%D7%99%D7%A9%D7%94-%D7%A9%D7%A2%D7%95%D7%A9%D7%99%D7%9D-%D7%A2%D7%9C%D7%99%D7%99-%D7%97%D7%A8%D7%9D");
+    }
+
+    @Test
     public void url_title_IsExpectedText() {
-        assertColumn(35,"extra_url_title", "this is the title of the url");
+        assertColumn(36,"extra_url_title", "this is the title of the url");
     }
 
     @Test
     public void nickname_IsAnonymous() {
-        assertColumn(36,"extra_item_profile_nickname", "anonymous");
+        assertColumn(37,"extra_item_profile_nickname", "anonymous");
     }
 
     @Test
     public void anonflg_IsTrue() {
-        assertColumn(37,"extra_item_profile_anonflg", "true");
+        assertColumn(38,"extra_item_profile_anonflg", "true");
     }
 
     @Test
     public void active_IsTrue() {
-        assertColumn(38,"extra_item_profile_active", "true");
+        assertColumn(39,"extra_item_profile_active", "true");
     }
 
     @Test
     public void meta_active_IsTrue() {
-        assertColumn(39,"meta_active", "true");
+        assertColumn(40,"meta_active", "true");
     }
 
     @Test
     public void meta_permissions_edit_IsTrue() {
-        assertColumn(40,"meta_permissions_edit", "true");
+        assertColumn(41,"meta_permissions_edit", "true");
     }
 
     @Test
     public void meta_permissions_delete_IsTrue() {
-        assertColumn(41,"meta_permissions_delete", "true");
+        assertColumn(42,"meta_permissions_delete", "true");
     }
 
     @Test
     public void meta_permissions_deleteWithoutMsg_IFalse() {
-        assertColumn(42,"meta_permissions_deleteWithoutMsg", "false");
+        assertColumn(43,"meta_permissions_deleteWithoutMsg", "false");
     }
 
     @Test
     public void meta_permissions_ban_IsTrue() {
-        assertColumn(43,"meta_permissions_ban", "true");
+        assertColumn(44,"meta_permissions_ban", "true");
     }
 
     @Test
     public void meta_permissions_report_IsTrue() {
-        assertColumn(44,"meta_permissions_report", "true");
+        assertColumn(45,"meta_permissions_report", "true");
     }
 
     @Test
     public void meta_permissions_showAdminMsgs_IsTrue() {
-        assertColumn(45,"meta_permissions_showAdminMsgs", "true");
+        assertColumn(46,"meta_permissions_showAdminMsgs", "true");
     }
 
     @Test
     public void meta_permissions_itemOwner_IsFalse() {
-        assertColumn(46,"meta_permissions_itemOwner", "false");
+        assertColumn(47,"meta_permissions_itemOwner", "false");
     }
 
     @Test
     public void meta_permissions_restore_IsTrue() {
-        assertColumn(47,"meta_permissions_restore", "true");
+        assertColumn(48,"meta_permissions_restore", "true");
     }
 
     @Test
     public void meta_permissions_removeFromChannel_IsTrue() {
-        assertColumn(48,"meta_permissions_removeFromChannel", "true");
+        assertColumn(49,"meta_permissions_removeFromChannel", "true");
     }
 
     @Test
     public void userid_isExpectedValue() {
-        assertColumn(49,"meta_moreUserDetails_userid", "229390");
+        assertColumn(50,"meta_moreUserDetails_userid", "229390");
     }
 
     @Test
     public void ip_isExpectedValue() {
-        assertColumn(50,"meta_moreUserDetails_ip", "176.230.34.156");
+        assertColumn(51,"meta_moreUserDetails_ip", "176.230.34.156");
     }
 
     @Test
