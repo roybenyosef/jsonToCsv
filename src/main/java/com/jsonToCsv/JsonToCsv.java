@@ -21,6 +21,7 @@ public class JsonToCsv {
 
     public static void main(String[] args) {
         try {
+            System.out.println("Implementation version: 0.3-Snapshot");
             System.out.println("System encoding: " + java.nio.charset.Charset.defaultCharset());
             readConfig(args);
             printWelcomeMessage();
