@@ -21,20 +21,21 @@ public class JsonToCsv {
 
     public static void main(String[] args) {
         try {
-            System.out.println("Implementation version: 0.3-Snapshot");
+            System.out.println("Implementation version: 0.4-Snapshot");
             System.out.println("System encoding: " + java.nio.charset.Charset.defaultCharset());
             readConfig(args);
             printWelcomeMessage();
             var jsonReader = new JsonReader();
             System.out.println("Reading json file...");
-            Results results = jsonReader.read(jsonFile);
-
-            try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile)))
-            {
-                CsvWriter csvWriter = new CsvWriter(writer, config, results);
-                System.out.println("Writing csv output file...");
-                csvWriter.write();
-            }
+            jsonReader.read2(jsonFile);
+//            Results results = jsonReader.read(jsonFile);
+//
+//            try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile)))
+//            {
+//                CsvWriter csvWriter = new CsvWriter(writer, config, results);
+//                System.out.println("Writing csv output file...");
+//                csvWriter.write();
+//            }
         }
         catch (Exception ex) {
             System.out.println(ex.getMessage());
