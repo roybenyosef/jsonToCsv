@@ -5,13 +5,13 @@ import com.jsonToCsv.IO.JsonReader;
 import com.jsonToCsv.config.Config;
 import com.jsonToCsv.dataObjects.Results;
 
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
+
+import static com.jsonToCsv.JsonToCsvConsts.CONFIG_FILE_NAME;
 
 public class JsonToCsv {
 
@@ -25,7 +25,7 @@ public class JsonToCsv {
             System.out.println("System encoding: " + java.nio.charset.Charset.defaultCharset());
             readConfig(args);
             printWelcomeMessage();
-            var jsonReader = new JsonReader();
+            var jsonReader = new JsonReader(config);
             System.out.println("Reading json file...");
             jsonReader.read2(jsonFile);
 //            Results results = jsonReader.read(jsonFile);
@@ -50,17 +50,30 @@ public class JsonToCsv {
 
     private static void readApplicationConfig() {
         System.out.println("Reading app configuration");
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Properties properties = new Properties();
-        try (InputStream resourceStream = loader.getResourceAsStream("application.properties")) {
-            properties.load(resourceStream);
+        try (InputStream configStream = CreateConfigInputStream()) {
+            properties.load(configStream);
             config.writeBomToCsv = Boolean.parseBoolean(properties.getProperty("csv.writebom"));
+            config.rootElement = properties.getProperty("csv.rootElement");
         }
         catch (Exception e) {
             System.out.println("Error reading configuration: " + e.getMessage());
             System.out.println("Using default values");
         }
         System.out.println("Configuration: write bom: " + config.writeBomToCsv);
+    }
+
+    private static InputStream CreateConfigInputStream() {
+
+        try {
+            System.out.println("Trying to read configuration: " + CONFIG_FILE_NAME);
+            return new FileInputStream(CONFIG_FILE_NAME);
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("Config file not found (" + CONFIG_FILE_NAME + "), Loading default configuration");
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            return loader.getResourceAsStream(CONFIG_FILE_NAME);
+        }
     }
 
     private static void readCommandLineArgs(String[] args) {

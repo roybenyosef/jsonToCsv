@@ -2,6 +2,7 @@ package com.jsonToCsv.IO;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jsonToCsv.config.Config;
 import com.jsonToCsv.dataObjects.Results;
 
 import java.io.File;
@@ -11,7 +12,12 @@ import java.util.List;
 
 public class JsonReader {
 
-    List<List<String>> jsonRows = new ArrayList<>();
+    private List<List<String>> jsonRows = new ArrayList<>();
+    Config config;
+
+    public JsonReader(Config config) {
+        this.config = config;
+    }
 
     public Results read(String jsonFile) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -23,11 +29,14 @@ public class JsonReader {
         File jsonFile = new File(jsonPath);
         JsonNode jsonDoc = objectMapper.readTree(jsonFile);
 
-        var fieldsIterator = jsonDoc.fields();
+        //TOTO - im here, this returns null
+        JsonNode rootNode = jsonDoc.findParent(config.rootElement);
+
+        var fieldsIterator = rootNode.fields();
         while (fieldsIterator.hasNext()) {
             var field = fieldsIterator.next();
             System.out.println("name: " + field.getKey() + ", value: " + field.getValue());
-            jsonRows.add()
+            System.in.read();
         }
     }
 
