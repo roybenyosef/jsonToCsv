@@ -3,7 +3,6 @@ package com.jsonToCsv.IO;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsonToCsv.config.Config;
-import com.jsonToCsv.dataObjects.Results;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,13 +23,38 @@ public class JsonReader {
         File jsonFile = new File(jsonPath);
         JsonNode jsonDoc = objectMapper.readTree(jsonFile);
 
-        //TOTO - im here, this returns null
-        JsonNode rootNode = jsonDoc.findParent(config.rootElement);
+        System.out.println("Traversing json element: " + config.rootElement);
+        JsonNode rootNode = jsonDoc.get(config.rootElement);
 
+        populateHeaders(rootNode);
+        //readJsonInternal(rootNode);
+    }
+
+    private void populateHeaders(JsonNode rootNode) {
+        var firstNode = rootNode.elements().next();
+        readNode(firstNode, config.rootElement);
+    }
+
+    private void readJsonInternal(JsonNode rootNode) {
+        var nodeIterator = rootNode.elements();
+        while (nodeIterator.hasNext()) {
+            var node = nodeIterator.next();
+            readNode(node, config.rootElement);
+            System.out.println("***********************************");
+        }
+    }
+
+    private void readNode(JsonNode rootNode, String name) {
         var fieldsIterator = rootNode.fields();
         while (fieldsIterator.hasNext()) {
             var field = fieldsIterator.next();
-            System.out.println("name: " + field.getKey() + ", value: " + field.getValue());
+            System.out.println(name + "_" + field.getKey() + " = " + field.getValue());
+        }
+
+        var nodeIterator = rootNode.elements();
+        while (nodeIterator.hasNext()) {
+            var node = nodeIterator.next();
+            readNode(node, name);
         }
     }
 
