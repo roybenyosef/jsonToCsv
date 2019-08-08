@@ -19,12 +19,7 @@ public class JsonReader {
         this.config = config;
     }
 
-    public Results read(String jsonFile) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(new File(jsonFile), Results.class);
-    }
-
-    public void read2(String jsonPath) throws IOException {
+    public void read(String jsonPath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         File jsonFile = new File(jsonPath);
         JsonNode jsonDoc = objectMapper.readTree(jsonFile);
@@ -36,7 +31,6 @@ public class JsonReader {
         while (fieldsIterator.hasNext()) {
             var field = fieldsIterator.next();
             System.out.println("name: " + field.getKey() + ", value: " + field.getValue());
-            System.in.read();
         }
     }
 

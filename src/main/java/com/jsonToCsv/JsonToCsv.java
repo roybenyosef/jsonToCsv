@@ -27,7 +27,7 @@ public class JsonToCsv {
             printWelcomeMessage();
             var jsonReader = new JsonReader(config);
             System.out.println("Reading json file...");
-            jsonReader.read2(jsonFile);
+            jsonReader.read(jsonFile);
 //            Results results = jsonReader.read(jsonFile);
 //
 //            try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile)))
