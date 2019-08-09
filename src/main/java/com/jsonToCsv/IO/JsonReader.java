@@ -26,35 +26,47 @@ public class JsonReader {
         System.out.println("Traversing json element: " + config.rootElement);
         JsonNode rootNode = jsonDoc.get(config.rootElement);
 
-        populateHeaders(rootNode);
-        //readJsonInternal(rootNode);
+        jsonRows.add(populateHeaders(rootNode));
+        readJsonInternal(rootNode);
+
+        for(var row : jsonRows) {
+            for (var cell : row) {
+                System.out.print(cell + ",");
+            }
+            System.out.println();
+        }
     }
 
-    private void populateHeaders(JsonNode rootNode) {
+    private List<String> populateHeaders(JsonNode rootNode) {
+        List<String> headers = new ArrayList<>();
         var firstNode = rootNode.elements().next();
-        readNode(firstNode, config.rootElement);
+        readNode(firstNode, config.rootElement, headers, false);
+        return headers;
     }
 
     private void readJsonInternal(JsonNode rootNode) {
         var nodeIterator = rootNode.elements();
         while (nodeIterator.hasNext()) {
+            List<String> csvRow = new ArrayList<>();
             var node = nodeIterator.next();
-            readNode(node, config.rootElement);
-            System.out.println("***********************************");
+            readNode(node, config.rootElement, csvRow, true);
+            jsonRows.add(csvRow);
+            //System.out.println("***********************************");
         }
     }
 
-    private void readNode(JsonNode rootNode, String name) {
+    private void readNode(JsonNode rootNode, String name, List<String> csvList, boolean writeValues) {
         var fieldsIterator = rootNode.fields();
         while (fieldsIterator.hasNext()) {
             var field = fieldsIterator.next();
-            System.out.println(name + "_" + field.getKey() + " = " + field.getValue());
+            //System.out.println(name + "_" + field.getKey() + " = " + field.getValue());
+            csvList.add(writeValues ? field.getValue().toString() : name + "_" + field.getKey());
         }
 
         var nodeIterator = rootNode.elements();
         while (nodeIterator.hasNext()) {
             var node = nodeIterator.next();
-            readNode(node, name);
+            readNode(node, name, csvList, writeValues);
         }
     }
 
