@@ -3,6 +3,7 @@ package com.jsonToCsv.IO;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsonToCsv.config.Config;
+import com.jsonToCsv.dataObjects.CsvData;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,11 +12,15 @@ import java.util.List;
 
 public class JsonReader {
 
-    private List<List<String>> jsonRows = new ArrayList<>();
-    Config config;
+    private CsvData csvData = new CsvData();
+    private Config config;
 
     public JsonReader(Config config) {
         this.config = config;
+    }
+
+    public CsvData getCsvData() {
+        return csvData;
     }
 
     public void read(String jsonPath) throws IOException {
@@ -26,22 +31,18 @@ public class JsonReader {
         System.out.println("Traversing json element: " + config.rootElement);
         JsonNode rootNode = jsonDoc.get(config.rootElement);
 
-        jsonRows.add(populateHeaders(rootNode));
+        populateHeaders(rootNode, csvData.getCsvHeaders());
         readJsonInternal(rootNode);
 
-        for(var row : jsonRows) {
-            for (var cell : row) {
-                System.out.print(cell + ",");
-            }
-            System.out.println();
+        for (var cell : csvData.getCsvHeaders()) {
+            System.out.print(cell + ",");
         }
+        System.out.println();
     }
 
-    private List<String> populateHeaders(JsonNode rootNode) {
-        List<String> headers = new ArrayList<>();
+    private void populateHeaders(JsonNode rootNode, List<String> headers) {
         var firstNode = rootNode.elements().next();
         readNode(firstNode, config.rootElement, headers, false);
-        return headers;
     }
 
     private void readJsonInternal(JsonNode rootNode) {
@@ -50,8 +51,7 @@ public class JsonReader {
             List<String> csvRow = new ArrayList<>();
             var node = nodeIterator.next();
             readNode(node, config.rootElement, csvRow, true);
-            jsonRows.add(csvRow);
-            //System.out.println("***********************************");
+            csvData.getCsvRows().add(csvRow);
         }
     }
 
@@ -59,7 +59,6 @@ public class JsonReader {
         var fieldsIterator = rootNode.fields();
         while (fieldsIterator.hasNext()) {
             var field = fieldsIterator.next();
-            //System.out.println(name + "_" + field.getKey() + " = " + field.getValue());
             csvList.add(writeValues ? field.getValue().toString() : name + "_" + field.getKey());
         }
 

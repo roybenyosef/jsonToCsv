@@ -6,24 +6,20 @@ import com.jsonToCsv.dataObjects.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class CsvWriter {
 
+    private CsvData csvData;
     private Appendable writer;
-    private Results results;
     private Config config;
 
-    public CsvWriter(Appendable writer, Config config, Results results) {
+    public CsvWriter(Appendable writer, Config config, CsvData csvData) {
         this.writer = writer;
-        this.results = results;
+        this.csvData = csvData;
         this.config = config;
     }
 
