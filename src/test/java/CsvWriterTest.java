@@ -42,12 +42,13 @@ public class CsvWriterTest {
 
     private void readJsonToCsv() throws IOException {
         config.writeBomToCsv = true;
+        config.rootElement = "data";
 
-        JsonReader jsonReader = new JsonReader();
-        jsonResults = jsonReader.read(jsonInputFilePath);
+        JsonReader jsonReader = new JsonReader(config);
+        jsonReader.read(jsonInputFilePath);
 
         StringWriter stringWriter = new StringWriter();
-        CsvWriter csvWriter = new CsvWriter(stringWriter, config, jsonResults);
+        CsvWriter csvWriter = new CsvWriter(stringWriter, config, jsonReader.getCsvData());
         csvWriter.write();
 
         CSVFormat csvFormat = csvWriter.getCsvFormat();

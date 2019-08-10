@@ -32,7 +32,7 @@ public class CsvWriter {
             for(List<String> row : csvRow) {
                 //prepareDatum(datum); //TODO - fix
                 //String fullUrl = getFullUrl(datum.getExtra().getUrl()); //TODO - fix
-                csvPrinter.printRecord((Object)row.toArray(new String[row.size()]));
+                csvPrinter.printRecord(row.toArray(new String[row.size()]));
             }
         }
     }
@@ -44,7 +44,6 @@ public class CsvWriter {
         else {
             return  config.baseUrl + "/" + relativeURl;
         }
-
     }
 
     public CSVFormat getCsvFormat() {

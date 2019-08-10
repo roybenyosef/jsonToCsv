@@ -8,6 +8,7 @@ import com.jsonToCsv.dataObjects.CsvData;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class JsonReader {
         JsonNode rootNode = jsonDoc.get(config.rootElement);
 
         populateHeaders(rootNode, csvData.getCsvHeaders());
-        readJsonInternal(rootNode);
+        readJsonData(rootNode);
 
         for (var cell : csvData.getCsvHeaders()) {
             System.out.print(cell + ",");
@@ -42,11 +43,11 @@ public class JsonReader {
     }
 
     private void populateHeaders(JsonNode rootNode, List<String> headers) {
-        var firstJsonEmpty = rootNode.fields().next();
-        readNode(firstJsonEmpty, "", headers, false);
+        var firstJsonEntry = rootNode.elements().next();
+        readNode(firstJsonEntry, "", headers, false);
     }
 
-    private void readJsonInternal(JsonNode rootNode) {
+    private void readJsonData(JsonNode rootNode) {
         var nodeIterator = rootNode.elements();
         while (nodeIterator.hasNext()) {
             List<String> csvRow = new ArrayList<>();
@@ -56,17 +57,39 @@ public class JsonReader {
         }
     }
 
-    private void readNode(Map.Entry<String, JsonNode> jsonEmpty, String name, List<String> csvList, boolean writeValues) {
-        var fieldsIterator = rootNode.fields();
-        while (fieldsIterator.hasNext()) {
-            var field = fieldsIterator.next();
-            csvList.add(writeValues ? field.getValue().toString() : name + "_" + field.getKey());
+    private void readNode(JsonNode node, String name, List<String> csvList, boolean writeValues) {
+        if (node.isObject()) {
+            readJsonObject(node, name, csvList, writeValues);
         }
+        else if (node.isArray()) {
+            readJsonArray(node, name, csvList, writeValues);
+        }
+        else {
+            readJsonValue(node, name, csvList, writeValues);
+        }
+    }
 
-        var nodeIterator = rootNode.elements();
-        while (nodeIterator.hasNext()) {
-            var node = nodeIterator.next();
-            readNode(node, name, csvList, writeValues);
+    private void readJsonArray(JsonNode node, String name, List<String> csvList, boolean writeValues) {
+        csvData.getArrayNameToSize().merge(name, node.size(),
+                (oldValue, newValue) -> Math.max(newValue, oldValue));
+
+        int itemIndex = 0;
+        for (var arrayItem : node) {
+            readNode(arrayItem, name + itemIndex, csvList, writeValues);
+            itemIndex++;
+        }
+    }
+
+    private void readJsonValue(JsonNode node, String name, List<String> csvList, boolean writeValues) {
+        csvList.add(writeValues ? node.textValue() : name);
+    }
+
+    private void readJsonObject(JsonNode node, String name, List<String> csvList, boolean writeValues) {
+        var fields = node.fields();
+        while (fields.hasNext()) {
+            var field = fields.next();
+            String prefixedName = name + (name.isEmpty() ? "" : "_");
+            readNode(field.getValue(), prefixedName + field.getKey(), csvList, writeValues);
         }
     }
 
