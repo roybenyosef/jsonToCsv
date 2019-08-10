@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class JsonReader {
 
@@ -41,8 +42,8 @@ public class JsonReader {
     }
 
     private void populateHeaders(JsonNode rootNode, List<String> headers) {
-        var firstNode = rootNode.elements().next();
-        readNode(firstNode, config.rootElement, headers, false);
+        var firstJsonEmpty = rootNode.fields().next();
+        readNode(firstJsonEmpty, "", headers, false);
     }
 
     private void readJsonInternal(JsonNode rootNode) {
@@ -55,7 +56,7 @@ public class JsonReader {
         }
     }
 
-    private void readNode(JsonNode rootNode, String name, List<String> csvList, boolean writeValues) {
+    private void readNode(Map.Entry<String, JsonNode> jsonEmpty, String name, List<String> csvList, boolean writeValues) {
         var fieldsIterator = rootNode.fields();
         while (fieldsIterator.hasNext()) {
             var field = fieldsIterator.next();

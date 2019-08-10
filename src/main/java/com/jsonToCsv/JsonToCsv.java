@@ -1,15 +1,16 @@
 package com.jsonToCsv;
 
-import com.jsonToCsv.IO.CsvWriter;
-import com.jsonToCsv.IO.JsonReader;
-import com.jsonToCsv.config.Config;
-import com.jsonToCsv.dataObjects.Results;
-
-import java.io.*;
-import java.nio.file.FileSystems;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
+
+import com.jsonToCsv.IO.CsvWriter;
+import com.jsonToCsv.IO.JsonReader;
+import com.jsonToCsv.config.Config;
 
 import static com.jsonToCsv.JsonToCsvConsts.CONFIG_FILE_NAME;
 
@@ -28,14 +29,13 @@ public class JsonToCsv {
             var jsonReader = new JsonReader(config);
             System.out.println("Reading json file...");
             jsonReader.read(jsonFile);
-//            Results results = jsonReader.read(jsonFile);
-//
-//            try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile)))
-//            {
-//                CsvWriter csvWriter = new CsvWriter(writer, config, results);
-//                System.out.println("Writing csv output file...");
-//                csvWriter.write();
-//            }
+
+            try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile)))
+            {
+                CsvWriter csvWriter = new CsvWriter(writer, config, jsonReader.getCsvData());
+                System.out.println("Writing csv output file...");
+                csvWriter.write();
+            }
         }
         catch (Exception ex) {
             System.out.println(ex.getMessage());

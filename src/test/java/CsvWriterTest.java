@@ -2,8 +2,6 @@ import com.jsonToCsv.IO.CsvWriter;
 import com.jsonToCsv.IO.JsonReader;
 import com.jsonToCsv.JsonToCsvConsts;
 import com.jsonToCsv.config.Config;
-import com.jsonToCsv.dataObjects.Results;
-import junit.framework.Assert;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -16,13 +14,13 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
 
-import static junit.framework.TestCase.*;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
 
 public class CsvWriterTest {
 
     private List<CSVRecord> csvRecords;
     private String jsonInputFilePath;
-    private Results jsonResults;
     private Config config = new Config();
 
     @Before
