@@ -14,27 +14,33 @@ import java.util.Map;
 
 public class JsonReader {
 
-    private JsonDocProvider jsonDocProvider;
     private CsvData csvData = new CsvData();
     private Config config;
 
     private Map<String, Integer> arrayColumnNameToMaxSize = new HashMap<>();
 
-    public JsonReader(Config config, JsonDocProvider jsonDocProvider) {
+    public JsonReader(Config config) {
         this.config = config;
-        this.jsonDocProvider = jsonDocProvider;
     }
 
     public CsvData getCsvData() {
         return csvData;
     }
 
-    public void read() throws IOException {
-        //File jsonFile = new File(jsonPath);
-        //JsonNode jsonDoc = objectMapper.readTree(jsonFile);
+    public void readFromFile(String jsonPath) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        File jsonFile = new File(jsonPath);
+        JsonNode jsonDoc = objectMapper.readTree(jsonFile);
+        readJsonDoc(jsonDoc);
+    }
 
-        JsonNode jsonDoc = jsonDocProvider.getJavaDoc();
+    public void readFromString(String jsonContent) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonDoc = objectMapper.readTree(jsonContent);
+        readJsonDoc(jsonDoc);
+    }
 
+    private void readJsonDoc(JsonNode jsonDoc) throws IOException {
         System.out.println("Traversing json element: " + config.rootElement);
         JsonNode rootNode = jsonDoc.get(config.rootElement);
 

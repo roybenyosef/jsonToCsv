@@ -26,14 +26,10 @@ public class JsonToCsv {
             readConfig(args);
             printWelcomeMessage();
 
-            var jsonReader = new JsonReader(config, () -> {
-                ObjectMapper objectMapper = new ObjectMapper();
-                File jsonFile = new File(jsonFile);
-                JsonNode jsonDoc = objectMapper.readTree(jsonFile);
-            });
+            var jsonReader = new JsonReader(config);
 
             System.out.println("Reading json file...");
-            jsonReader.read();
+            jsonReader.readFromFile(jsonFile);
 
             try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile)))
             {

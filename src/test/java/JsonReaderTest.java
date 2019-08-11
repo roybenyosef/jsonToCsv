@@ -3,8 +3,10 @@ import com.jsonToCsv.IO.JsonReader;
 import com.jsonToCsv.config.Config;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
@@ -16,16 +18,11 @@ public class JsonReaderTest {
         config.rootElement = "data";
 
         JsonReader jsonReader = new JsonReader(config);
-        jsonReader.read(jsonInputFilePath);
+        try {
+            jsonReader.readFromString("{data {}}");
 
-        StringWriter stringWriter = new StringWriter();
-        CsvWriter csvWriter = new CsvWriter(stringWriter, config, jsonReader.getCsvData());
-        csvWriter.write();
-
-        CSVFormat csvFormat = csvWriter.getCsvFormat();
-        try (StringReader stringReader = new StringReader(stringWriter.toString());
-             CSVParser csvParser = new CSVParser(stringReader, csvFormat)) {
-            csvRecords = csvParser.getRecords();
+        } catch (IOException e) {
+            Assert.fail(e.getMessage());
         }
     }
 }
