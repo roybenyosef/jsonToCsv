@@ -21,6 +21,6 @@ public class CsvData {
 
     private List<String> csvHeaders = new ArrayList<>();
     private List<List<String>> csvRows = new ArrayList<>();
-    private Map<String, Integer> arrayNameToSize = new HashMap<>();
+    private Map<String, Integer> arrayNameToSize = new HashMap<>(); //TODO - remove this
 
 }

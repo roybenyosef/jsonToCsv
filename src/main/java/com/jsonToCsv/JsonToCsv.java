@@ -1,13 +1,12 @@
 package com.jsonToCsv;
 
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsonToCsv.IO.CsvWriter;
 import com.jsonToCsv.IO.JsonReader;
 import com.jsonToCsv.config.Config;
@@ -16,7 +15,7 @@ import static com.jsonToCsv.JsonToCsvConsts.CONFIG_FILE_NAME;
 
 public class JsonToCsv {
 
-    static private String jsonFile;
+    static private String jsonFile = "";
     static private String outputFile;
     static private Config config = new Config();
 
@@ -26,9 +25,15 @@ public class JsonToCsv {
             System.out.println("System encoding: " + java.nio.charset.Charset.defaultCharset());
             readConfig(args);
             printWelcomeMessage();
-            var jsonReader = new JsonReader(config);
+
+            var jsonReader = new JsonReader(config, () -> {
+                ObjectMapper objectMapper = new ObjectMapper();
+                File jsonFile = new File(jsonFile);
+                JsonNode jsonDoc = objectMapper.readTree(jsonFile);
+            });
+
             System.out.println("Reading json file...");
-            jsonReader.read(jsonFile);
+            jsonReader.read();
 
             try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFile)))
             {

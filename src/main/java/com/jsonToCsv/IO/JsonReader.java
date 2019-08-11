@@ -14,21 +14,26 @@ import java.util.Map;
 
 public class JsonReader {
 
+    private JsonDocProvider jsonDocProvider;
     private CsvData csvData = new CsvData();
     private Config config;
 
-    public JsonReader(Config config) {
+    private Map<String, Integer> arrayColumnNameToMaxSize = new HashMap<>();
+
+    public JsonReader(Config config, JsonDocProvider jsonDocProvider) {
         this.config = config;
+        this.jsonDocProvider = jsonDocProvider;
     }
 
     public CsvData getCsvData() {
         return csvData;
     }
 
-    public void read(String jsonPath) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        File jsonFile = new File(jsonPath);
-        JsonNode jsonDoc = objectMapper.readTree(jsonFile);
+    public void read() throws IOException {
+        //File jsonFile = new File(jsonPath);
+        //JsonNode jsonDoc = objectMapper.readTree(jsonFile);
+
+        JsonNode jsonDoc = jsonDocProvider.getJavaDoc();
 
         System.out.println("Traversing json element: " + config.rootElement);
         JsonNode rootNode = jsonDoc.get(config.rootElement);
@@ -69,21 +74,6 @@ public class JsonReader {
         }
     }
 
-    private void readJsonArray(JsonNode node, String name, List<String> csvList, boolean writeValues) {
-        csvData.getArrayNameToSize().merge(name, node.size(),
-                (oldValue, newValue) -> Math.max(newValue, oldValue));
-
-        int itemIndex = 0;
-        for (var arrayItem : node) {
-            readNode(arrayItem, name + itemIndex, csvList, writeValues);
-            itemIndex++;
-        }
-    }
-
-    private void readJsonValue(JsonNode node, String name, List<String> csvList, boolean writeValues) {
-        csvList.add(writeValues ? node.textValue() : name);
-    }
-
     private void readJsonObject(JsonNode node, String name, List<String> csvList, boolean writeValues) {
         var fields = node.fields();
         while (fields.hasNext()) {
@@ -93,5 +83,33 @@ public class JsonReader {
         }
     }
 
+    private void readJsonArray(JsonNode node, String name, List<String> csvList, boolean writeValues) {
 
+        //TODO remove this
+        //        csvData.getArrayNameToSize().merge(name, node.size(),
+        //        (oldValue, newValue) -> Math.max(newValue, oldValue));
+
+        int itemIndex = 0;
+        for (var arrayItem : node) {
+            readNode(arrayItem, name + itemIndex, csvList, writeValues);
+            itemIndex++;
+        }
+
+        Integer maxArrayIndex = arrayColumnNameToMaxSize.get(name);
+        if (maxArrayIndex == null || itemIndex > maxArrayIndex) {
+            arrayColumnNameToMaxSize.put(name, maxArrayIndex);
+            var indexOfCurrentMaxArrayIndex = csvData.getCsvHeaders().indexOf("name" + maxArrayIndex);
+            for (int i = indexOfCurrentMaxArrayIndex + 1; i <= maxArrayIndex; ++i) {
+                csvData.getCsvHeaders().add(indexOfCurrentMaxArrayIndex, "name" + i);
+                for (var row : csvData.getCsvRows()) {
+                    row.add(indexOfCurrentMaxArrayIndex, "");
+                }
+            }
+        }
+    }
+
+    private void readJsonValue(JsonNode node, String name, List<String> csvList, boolean writeValues) {
+        csvList.add(writeValues ? node.textValue() : name);
+    }
 }
+
