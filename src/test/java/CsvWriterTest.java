@@ -45,7 +45,7 @@ public class CsvWriterTest {
         config.rootElement = "data";
 
         JsonReader jsonReader = new JsonReader(config);
-        jsonReader.read(jsonInputFilePath);
+        jsonReader.readFromFile(jsonInputFilePath);
 
         StringWriter stringWriter = new StringWriter();
         CsvWriter csvWriter = new CsvWriter(stringWriter, config, jsonReader.getCsvData());

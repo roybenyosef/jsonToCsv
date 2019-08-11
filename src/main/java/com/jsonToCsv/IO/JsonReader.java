@@ -7,10 +7,7 @@ import com.jsonToCsv.dataObjects.CsvData;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class JsonReader {
 
@@ -95,21 +92,30 @@ public class JsonReader {
         //        csvData.getArrayNameToSize().merge(name, node.size(),
         //        (oldValue, newValue) -> Math.max(newValue, oldValue));
 
-        int itemIndex = 0;
+        Integer itemIndex = 0;
         for (var arrayItem : node) {
             readNode(arrayItem, name + itemIndex, csvList, writeValues);
             itemIndex++;
         }
 
-        Integer maxArrayIndex = arrayColumnNameToMaxSize.get(name);
-        if (maxArrayIndex == null || itemIndex > maxArrayIndex) {
-            arrayColumnNameToMaxSize.put(name, maxArrayIndex);
-            var indexOfCurrentMaxArrayIndex = csvData.getCsvHeaders().indexOf("name" + maxArrayIndex);
-            for (int i = indexOfCurrentMaxArrayIndex + 1; i <= maxArrayIndex; ++i) {
-                csvData.getCsvHeaders().add(indexOfCurrentMaxArrayIndex, "name" + i);
-                for (var row : csvData.getCsvRows()) {
-                    row.add(indexOfCurrentMaxArrayIndex, "");
-                }
+        Integer maxArrayIndex = Optional.ofNullable(arrayColumnNameToMaxSize.get(name)).orElse(itemIndex);
+        if (itemIndex < maxArrayIndex) {
+            String arrayToAdd[] = new String[maxArrayIndex - itemIndex];
+            Arrays.fill(arrayToAdd, "");
+            csvList.addAll(Arrays.asList(arrayToAdd));
+        }
+        else if (itemIndex > maxArrayIndex) {
+            addEmptyColumnsToAddOtherRows(name, maxArrayIndex);
+        }
+    }
+
+    private void addEmptyColumnsToAddOtherRows(String name, Integer maxArrayIndex) {
+        arrayColumnNameToMaxSize.put(name, maxArrayIndex);
+        var indexOfCurrentMaxArrayIndex = csvData.getCsvHeaders().indexOf("name" + maxArrayIndex);
+        for (int i = indexOfCurrentMaxArrayIndex + 1; i <= maxArrayIndex; ++i) {
+            csvData.getCsvHeaders().add(indexOfCurrentMaxArrayIndex, "name" + i);
+            for (var row : csvData.getCsvRows()) {
+                row.add(indexOfCurrentMaxArrayIndex, "");
             }
         }
     }
