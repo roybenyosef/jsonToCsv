@@ -98,22 +98,24 @@ public class JsonReader {
             itemIndex++;
         }
 
-        Integer maxArrayIndex = Optional.ofNullable(arrayColumnNameToMaxSize.get(name)).orElse(itemIndex);
-        if (itemIndex < maxArrayIndex) {
+        Integer maxArrayIndex = arrayColumnNameToMaxSize.get(name);
+
+        if (maxArrayIndex == null || itemIndex > maxArrayIndex) {
+            maxArrayIndex = itemIndex;
+            addEmptyColumnsToAddOtherRows(name, maxArrayIndex);
+        }
+        else if (itemIndex < maxArrayIndex) {
             String arrayToAdd[] = new String[maxArrayIndex - itemIndex];
             Arrays.fill(arrayToAdd, "");
             csvList.addAll(Arrays.asList(arrayToAdd));
-        }
-        else if (itemIndex > maxArrayIndex) {
-            addEmptyColumnsToAddOtherRows(name, maxArrayIndex);
         }
     }
 
     private void addEmptyColumnsToAddOtherRows(String name, Integer maxArrayIndex) {
         arrayColumnNameToMaxSize.put(name, maxArrayIndex);
-        var indexOfCurrentMaxArrayIndex = csvData.getCsvHeaders().indexOf("name" + maxArrayIndex);
+        var indexOfCurrentMaxArrayIndex = csvData.getCsvHeaders().indexOf(name + (maxArrayIndex - 1));
         for (int i = indexOfCurrentMaxArrayIndex + 1; i <= maxArrayIndex; ++i) {
-            csvData.getCsvHeaders().add(indexOfCurrentMaxArrayIndex, "name" + i);
+            csvData.getCsvHeaders().add(indexOfCurrentMaxArrayIndex, name + i);
             for (var row : csvData.getCsvRows()) {
                 row.add(indexOfCurrentMaxArrayIndex, "");
             }
