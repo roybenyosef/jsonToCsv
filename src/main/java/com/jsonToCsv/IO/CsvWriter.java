@@ -33,7 +33,6 @@ public class CsvWriter {
                 //prepareDatum(datum); //TODO - fix
                 //String fullUrl = getFullUrl(datum.getExtra().getUrl()); //TODO - fix
                 sanitizeData(row);
-                formatData(row);
                 csvPrinter.printRecord(row.toArray(new String[row.size()]));
             }
         }
@@ -119,9 +118,4 @@ public class CsvWriter {
                 .replace('\n', ' ')
                 .replace('"', '\'');
     }
-
-    private void formatData(List<String> row) {
-        if
-    }
-
 }

@@ -123,7 +123,31 @@ public class JsonReader {
 
     private void readJsonValue(JsonNode node, String name, List<String> csvList, boolean writeValues) {
         String value = node.toString().replaceAll("^\"|\"$", "");
-        csvList.add(writeValues ? value : name);
+        csvList.addAll(writeValues ? CreateValueToAdd(value, name) : CreateNameToAdd(value, name));
+    }
+
+    private List<String> CreateNameToAdd(String value, String name) {
+        var processedData = new ArrayList<String>();
+        if (!config.columnToSplit.containsKey(name)) {
+            processedData.add(name);
+        }
+        else {
+            for (int i = 0; i < value.split(config.columnToSplit.get(name)).length; ++i) {
+                processedData.add(name + i);
+            }
+        }
+        return processedData;
+    }
+
+    private List<String> CreateValueToAdd(String value, String name) {
+        var processedData = new ArrayList<String>();
+        if (!config.columnToSplit.containsKey(name)) {
+            processedData.add(value);
+        }
+        else {
+            processedData.addAll(Arrays.asList(value.split(config.columnToSplit.get(name))));
+        }
+        return processedData;
     }
 }
 

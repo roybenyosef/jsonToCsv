@@ -62,7 +62,7 @@ public class JsonToCsv {
             {
                 String column = columnToSplit.substring(0, columnToSplit.indexOf(','));
                 String delimiter = columnToSplit.substring(columnToSplit.indexOf(",'") + 2, columnToSplit.indexOf(",'") + 3);
-                config.columnToSplit.put(column, delimiter.charAt(0));
+                config.columnToSplit.put(column, delimiter);
                 columnToSplit = columnToSplit.substring(columnToSplit.indexOf(",'") + 4);
             }
         }

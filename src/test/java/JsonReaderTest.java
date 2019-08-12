@@ -61,5 +61,30 @@ public class JsonReaderTest {
         }
     }
 
+    @Test
+    public void splitTwoColumns_resultHasTwoColumns() {
+        Config config = new Config();
+        config.rootElement = "data";
+        config.columnToSplit.put("moshe", ",");
+        JsonReader jsonReader = new JsonReader(config);
+
+        try {
+            jsonReader.readFromString("{\"data\": [ {\"moshe\" : \"blabla11,blabla12\"}, {\"moshe\" : \"blabla21,blabla22\"}]}");
+            CsvData csvData = jsonReader.getCsvData();
+
+            assertEquals(2, csvData.getCsvHeaders().size());
+            assertEquals("moshe0", csvData.getCsvHeaders().get(0));
+            assertEquals("moshe1", csvData.getCsvHeaders().get(1));
+
+            assertEquals("blabla11", csvData.getCsvRows().get(0).get(0));
+            assertEquals("blabla12", csvData.getCsvRows().get(0).get(1));
+            assertEquals("blabla21", csvData.getCsvRows().get(1).get(0));
+            assertEquals("blabla22", csvData.getCsvRows().get(1).get(1));
+
+        } catch (IOException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
 
 }

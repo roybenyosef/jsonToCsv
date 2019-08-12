@@ -43,6 +43,7 @@ public class CsvWriterTest {
     private void readJsonToCsv() throws IOException {
         config.writeBomToCsv = true;
         config.rootElement = "data";
+        config.columnToSplit.put("data_time", " ");
 
         JsonReader jsonReader = new JsonReader(config);
         jsonReader.readFromFile(jsonInputFilePath);
@@ -120,93 +121,93 @@ public class CsvWriterTest {
     }
 
     @Test
-    public void time_isExpecetdTime() {
-        assertColumn(10, "time", "13:06:53");
+    public void date_isExpectedDate() {
+        assertColumn(10, "data_time0", "2019/04/18");
     }
 
     @Test
-    public void date_isExpectedDate() {
-        assertColumn(11, "date", "2019/04/18");
+    public void time_isExpecetdTime() {
+        assertColumn(11, "data_time1", "13:06:53");
     }
 
     @Test
     public void archive_isFalse() {
-        assertColumn(12,"archive", "false");
+        assertColumn(12,"data_archive", "false");
     }
 
     @Test
     public void anonflg_isTrue() {
-        assertColumn(13,"anonflg", "true");
+        assertColumn(13,"data_anonflg", "true");
     }
 
     @Test
     public void super_anonflg_isFalse() {
-        assertColumn(14,"super_anonflg", "false");
+        assertColumn(14,"data_super_anonflg", "false");
     }
 
     @Test
     public void userid_isZero() {
-        assertColumn(15,"userid", "0");
+        assertColumn(15,"data_userid", "0");
     }
 
     @Test
     public void photo_isExpectedText() {
-        assertColumn(16,"photo", "unsplash:hjwKMkehBco");
+        assertColumn(16,"data_photo", "unsplash:hjwKMkehBco");
     }
 
     @Test
     public void ask_type_isEleven() {
-        assertColumn(17,"ask_type", "11");
+        assertColumn(17,"data_ask_type", "11");
     }
 
     @Test
     public void photo_type_isOne() {
-        assertColumn(18,"photo_type", "1");
+        assertColumn(18,"data_photo_type", "1");
     }
 
     @Test
     public void bit_settings_isZero() {
-        assertColumn(19,"bit_settings", "0");
+        assertColumn(19,"data_bit_settings", "0");
     }
 
     @Test
     public void q_link_isEmpty() {
-        assertColumn(20,"q_link", "");
+        assertColumn(20,"data_q_link", "");
     }
 
     @Test
     public void revision_flg_isFalse() {
-        assertColumn(21,"revision_flg", "false");
+        assertColumn(21,"data_revision_flg", "false");
     }
 
     @Test
     public void city_id_isZero() {
-        assertColumn(22,"city_id", "0");
+        assertColumn(22,"data_city_id", "0");
     }
 
     @Test
     public void answer_count_isTen() {
-        assertColumn(23,"answer_count", "10");
+        assertColumn(23,"data_answer_count", "10");
     }
 
     @Test
     public void pin_count_isOne() {
-        assertColumn(24,"pin_count", "1");
+        assertColumn(24,"data_pin_count", "1");
     }
 
     @Test
     public void user_pinned_isMinusOne() {
-        assertColumn(25,"user_pinned", "-1");
+        assertColumn(25,"data_user_pinned", "-1");
     }
 
     @Test
     public void safefilter_isFalse() {
-        assertColumn(26,"safefilter", "false");
+        assertColumn(26,"data_safefilter", "false");
     }
 
     @Test
     public void channel_id_isTen() {
-        assertColumn(27,"channel_id", "10");
+        assertColumn(27,"data_channel_id", "10");
     }
 
     @Test

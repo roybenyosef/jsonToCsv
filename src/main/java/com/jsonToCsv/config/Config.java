@@ -10,5 +10,5 @@ public class Config {
     public boolean writeBomToCsv = true;
     public String baseUrl = JsonToCsvConsts.DEFAULT_BASE_URL;
     public String rootElement;
-    public Map<String, Character> columnToSplit = new HashMap<>();
+    public Map<String, String> columnToSplit = new HashMap<>();
 }
