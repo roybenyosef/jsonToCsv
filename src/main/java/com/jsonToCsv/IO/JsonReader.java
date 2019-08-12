@@ -92,7 +92,7 @@ public class JsonReader {
         //        csvData.getArrayNameToSize().merge(name, node.size(),
         //        (oldValue, newValue) -> Math.max(newValue, oldValue));
 
-        Integer itemIndex = 0;
+        Integer itemIndex = -1;
         for (var arrayItem : node) {
             readNode(arrayItem, name + itemIndex, csvList, writeValues);
             itemIndex++;
