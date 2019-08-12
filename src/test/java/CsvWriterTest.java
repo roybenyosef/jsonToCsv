@@ -96,27 +96,27 @@ public class CsvWriterTest {
 
     @Test
     public void tag1_isExpectedText() {
-        assertColumn(5, "data_tagslist_item1", "writing");
+        assertColumn(5, "data_tagslist0", "writing");
     }
 
     @Test
     public void tag2_isExpectedText() {
-        assertColumn(6, "data_tagslist_item2", "review");
+        assertColumn(6, "data_tagslist1", "review");
     }
 
     @Test
     public void tag3_isExpectedText() {
-        assertColumn(7, "data_tagslist_item3", "ban");
+        assertColumn(7, "data_tagslist2", "ban");
     }
 
     @Test
     public void tag4_isExpectedText() {
-        assertColumn(8, "data_tagslist_item4", "advise");
+        assertColumn(8, "data_tagslist3", "advise");
     }
 
     @Test
     public void tag5_isExpectedText() {
-        assertColumn(9, "data_tagslist_item5", "consulting");
+        assertColumn(9, "data_tagslist4", "consulting");
     }
 
     @Test

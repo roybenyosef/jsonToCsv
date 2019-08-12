@@ -32,6 +32,7 @@ public class CsvWriter {
             for(List<String> row : csvRow) {
                 //prepareDatum(datum); //TODO - fix
                 //String fullUrl = getFullUrl(datum.getExtra().getUrl()); //TODO - fix
+                sanitizeData(row);
                 csvPrinter.printRecord(row.toArray(new String[row.size()]));
             }
         }
@@ -68,23 +69,8 @@ public class CsvWriter {
     //TODO - fix
 //    private void prepareDatum(Datum datum) {
 //        fillNulls(datum);
-//        padTags(datum);
 //    }
 
-    //TODO - fix
-//    private void padTags(Datum datum) {
-//        List<String> tagsList = datum.getData().getTagslist();
-//        for (int i = tagsList.size(); i < config.MAX_TAGS; ++i) {
-//            tagsList.add("");
-//        }
-//    }
-
-
-    //TODO - fix
-//    private String prepareTagList(List<String> tagslist) {
-//        List<String> paddedTagsList = new ArrayList<>(Collections.nCopies(Math.max(tagslist.size(), config.MAX_TAGS), "-"));
-//        return String.join("|", tagslist);
-//    }
 
     //TODO - fix
 //    private void fillNulls(Datum datum) {
@@ -117,6 +103,13 @@ public class CsvWriter {
 //        }
 //    }
 
+    private void sanitizeData(List<String> csvRow) {
+        for (int i = 0; i < csvRow.size(); ++i) {
+            csvRow.set(i, sanitizeString(csvRow.get(i)));
+        }
+    }
+
+
     private String sanitizeString(String value) {
         if (value == null) {
             return "null";
@@ -126,7 +119,4 @@ public class CsvWriter {
                 .replace('"', '\'');
     }
 
-    private Object sanitizeObject(Object obj) {
-        return obj == null ? "null" : obj;
-    }
 }

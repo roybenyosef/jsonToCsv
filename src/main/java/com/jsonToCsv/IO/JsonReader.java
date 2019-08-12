@@ -122,7 +122,8 @@ public class JsonReader {
     }
 
     private void readJsonValue(JsonNode node, String name, List<String> csvList, boolean writeValues) {
-        csvList.add(writeValues ? node.textValue() : name);
+        String value = node.toString().replaceAll("^\"|\"$", "");
+        csvList.add(writeValues ? value : name);
     }
 }
 
