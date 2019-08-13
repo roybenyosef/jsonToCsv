@@ -1,22 +1,17 @@
-import com.jsonToCsv.IO.CsvWriter;
 import com.jsonToCsv.IO.JsonReader;
 import com.jsonToCsv.config.Config;
 import com.jsonToCsv.dataObjects.CsvData;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 
 import static junit.framework.TestCase.assertEquals;
 
 public class JsonReaderTest {
 
     @Test
-    public void arrayIsAutoFilled_firstArrayIsFiveElements_FiveEleventsInAllRowsSecondFilledWithEmpty() {
+    public void jsonReader_arrayIsAutoFilledWhenFirstArrayIsFiveElements_secondArrayIsFilledWithEmptyStrings() {
         Config config = new Config();
         config.rootElement = "data";
 
@@ -39,7 +34,7 @@ public class JsonReaderTest {
     }
 
     @Test
-    public void arrayIsAutoFilled_secondArrayIsFiveElements_FiveEleventsInAllRowsFirstFilledWithEmpty() {
+    public void jsonReader_arrayIsAutoFilledWhenSecondArrayIsFiveElements_firstArrayIsFilledWithEmptyStrings() {
         Config config = new Config();
         config.rootElement = "data";
 
@@ -62,10 +57,10 @@ public class JsonReaderTest {
     }
 
     @Test
-    public void splitTwoColumns_resultHasTwoColumns() {
+    public void jsonReader_splitTwoColumnsByComma_mosheColumnIsSplit() {
         Config config = new Config();
         config.rootElement = "data";
-        config.columnToSplit.put("moshe", ",");
+        config.columnsToSplit.put("moshe", ",");
         JsonReader jsonReader = new JsonReader(config);
 
         try {
@@ -85,6 +80,4 @@ public class JsonReaderTest {
             Assert.fail(e.getMessage());
         }
     }
-
-
 }

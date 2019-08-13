@@ -1,29 +1,25 @@
 package com.jsonToCsv;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Properties;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsonToCsv.IO.CsvWriter;
 import com.jsonToCsv.IO.JsonReader;
 import com.jsonToCsv.config.Config;
 
-import static com.jsonToCsv.JsonToCsvConsts.CONFIG_FILE_NAME;
+import java.io.BufferedWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class JsonToCsv {
 
     static private String jsonFile = "";
     static private String outputFile;
-    static private Config config = new Config();
+    static private Config config;
 
     public static void main(String[] args) {
         try {
             System.out.println("Implementation version: 0.4-Snapshot");
             System.out.println("System encoding: " + java.nio.charset.Charset.defaultCharset());
-            readConfig(args);
+            readCommandLineArgs(args);
+            config = new Config();
             printWelcomeMessage();
 
             var jsonReader = new JsonReader(config);
@@ -42,48 +38,6 @@ public class JsonToCsv {
             System.out.println(ex.getMessage());
         }
         System.out.println("All done.");
-    }
-
-    private static void readConfig(String[] args) {
-        readCommandLineArgs(args);
-        readApplicationConfig();
-    }
-
-    private static void readApplicationConfig() {
-        System.out.println("Reading app configuration");
-        Properties properties = new Properties();
-        try (InputStream configStream = CreateConfigInputStream()) {
-            properties.load(configStream);
-            config.writeBomToCsv = Boolean.parseBoolean(properties.getProperty("csv.writebom"));
-            config.rootElement = properties.getProperty("csv.rootElement");
-
-            String columnToSplit = properties.getProperty("csv.splitColumnNamesAndDelimiter");
-            while (columnToSplit.length() > 0)
-            {
-                String column = columnToSplit.substring(0, columnToSplit.indexOf(','));
-                String delimiter = columnToSplit.substring(columnToSplit.indexOf(",'") + 2, columnToSplit.indexOf(",'") + 3);
-                config.columnToSplit.put(column, delimiter);
-                columnToSplit = columnToSplit.substring(columnToSplit.indexOf(",'") + 4);
-            }
-        }
-        catch (Exception e) {
-            System.out.println("Error reading configuration: " + e.getMessage());
-            System.out.println("Using default values");
-        }
-        System.out.println("Configuration: write bom: " + config.writeBomToCsv);
-    }
-
-    private static InputStream CreateConfigInputStream() {
-
-        try {
-            System.out.println("Trying to read configuration: " + CONFIG_FILE_NAME);
-            return new FileInputStream(CONFIG_FILE_NAME);
-        }
-        catch (FileNotFoundException e) {
-            System.out.println("Config file not found (" + CONFIG_FILE_NAME + "), Loading default configuration");
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            return loader.getResourceAsStream(CONFIG_FILE_NAME);
-        }
     }
 
     private static void readCommandLineArgs(String[] args) {

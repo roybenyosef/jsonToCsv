@@ -37,17 +37,11 @@ public class JsonReader {
         readJsonDoc(jsonDoc);
     }
 
-    private void readJsonDoc(JsonNode jsonDoc) throws IOException {
+    private void readJsonDoc(JsonNode jsonDoc) {
         System.out.println("Traversing json element: " + config.rootElement);
         JsonNode rootNode = jsonDoc.get(config.rootElement);
-
         populateHeaders(rootNode, csvData.getCsvHeaders());
         readJsonData(rootNode);
-
-        for (var cell : csvData.getCsvHeaders()) {
-            System.out.print(cell + ",");
-        }
-        System.out.println();
     }
 
     private void populateHeaders(JsonNode rootNode, List<String> headers) {
@@ -103,7 +97,7 @@ public class JsonReader {
             addEmptyColumnsToAddOtherRows(name, maxArrayIndex);
         }
         else if (itemIndex < maxArrayIndex) {
-            String arrayToAdd[] = new String[maxArrayIndex - itemIndex];
+            String[] arrayToAdd = new String[maxArrayIndex - itemIndex];
             Arrays.fill(arrayToAdd, "");
             csvList.addAll(Arrays.asList(arrayToAdd));
         }
@@ -123,16 +117,18 @@ public class JsonReader {
 
     private void readJsonValue(JsonNode node, String name, List<String> csvList, boolean writeValues) {
         String value = node.toString().replaceAll("^\"|\"$", "");
+        value = sanitizeString(value);
+        value = applyPrefix(name, value);
         csvList.addAll(writeValues ? CreateValueToAdd(value, name) : CreateNameToAdd(value, name));
     }
 
     private List<String> CreateNameToAdd(String value, String name) {
         var processedData = new ArrayList<String>();
-        if (!config.columnToSplit.containsKey(name)) {
+        if (!config.columnsToSplit.containsKey(name)) {
             processedData.add(name);
         }
         else {
-            for (int i = 0; i < value.split(config.columnToSplit.get(name)).length; ++i) {
+            for (int i = 0; i < value.split(config.columnsToSplit.get(name)).length; ++i) {
                 processedData.add(name + i);
             }
         }
@@ -141,13 +137,29 @@ public class JsonReader {
 
     private List<String> CreateValueToAdd(String value, String name) {
         var processedData = new ArrayList<String>();
-        if (!config.columnToSplit.containsKey(name)) {
+        if (!config.columnsToSplit.containsKey(name)) {
             processedData.add(value);
         }
         else {
-            processedData.addAll(Arrays.asList(value.split(config.columnToSplit.get(name))));
+            processedData.addAll(Arrays.asList(value.split(config.columnsToSplit.get(name))));
         }
         return processedData;
+    }
+
+    private String applyPrefix(String name, String value) {
+        if (config.columnsPrefix.containsKey(name)) {
+            value = config.columnsPrefix.get(name) + value;
+        }
+        return value;
+    }
+
+    private String sanitizeString(String value) {
+        if (value == null) {
+            return "null";
+        }
+        return value.replace('\r', ' ')
+                .replace('\n', ' ')
+                .replace('"', '\'');
     }
 }
 
