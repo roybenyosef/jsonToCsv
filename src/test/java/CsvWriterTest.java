@@ -21,11 +21,12 @@ public class CsvWriterTest {
 
     private List<CSVRecord> csvRecords;
     private String jsonInputFilePath;
-    private Config config = new Config();
+    private Config config;
 
     @Before
     public void setUp() {
         try {
+            config = new Config();
             getResourceFilePath();
             readJsonToCsv();
         }

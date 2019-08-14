@@ -12,11 +12,11 @@ public class JsonReaderTest {
 
     @Test
     public void jsonReader_arrayIsAutoFilledWhenFirstArrayIsFiveElements_secondArrayIsFilledWithEmptyStrings() {
-        Config config = new Config();
-        config.rootElement = "data";
-
-        JsonReader jsonReader = new JsonReader(config);
         try {
+            Config config = new Config();
+            config.rootElement = "data";
+            JsonReader jsonReader = new JsonReader(config);
+
             jsonReader.readFromString("{\"data\": [{\"array\": [\"first-1\",\"second-1\",\"third-1\",\"fourth-1\",\"fifth-1\"]},{\"array\": [\"first-2\", \"second-2\", \"third-2\"]}]}");
             CsvData csvData = jsonReader.getCsvData();
             assertEquals(5, csvData.getCsvHeaders().size());
@@ -35,11 +35,12 @@ public class JsonReaderTest {
 
     @Test
     public void jsonReader_arrayIsAutoFilledWhenSecondArrayIsFiveElements_firstArrayIsFilledWithEmptyStrings() {
-        Config config = new Config();
-        config.rootElement = "data";
 
-        JsonReader jsonReader = new JsonReader(config);
         try {
+            Config config = new Config();
+            config.rootElement = "data";
+            JsonReader jsonReader = new JsonReader(config);
+
             jsonReader.readFromString("{\"data\": [{\"array\": [\"first-1\",\"second-1\",\"third-1\"]},{\"array\": [\"first-2\", \"second-2\", \"third-2\",\"fourth-2\",\"fifth-2\"]}]}");
             CsvData csvData = jsonReader.getCsvData();
             assertEquals(5, csvData.getCsvHeaders().size());
@@ -58,12 +59,12 @@ public class JsonReaderTest {
 
     @Test
     public void jsonReader_splitTwoColumnsByComma_mosheColumnIsSplit() {
-        Config config = new Config();
-        config.rootElement = "data";
-        config.columnsToSplit.put("moshe", ",");
-        JsonReader jsonReader = new JsonReader(config);
-
         try {
+            Config config = new Config();
+            config.rootElement = "data";
+            config.columnsToSplit.put("moshe", ",");
+            JsonReader jsonReader = new JsonReader(config);
+
             jsonReader.readFromString("{\"data\": [ {\"moshe\" : \"blabla11,blabla12\"}, {\"moshe\" : \"blabla21,blabla22\"}]}");
             CsvData csvData = jsonReader.getCsvData();
 
