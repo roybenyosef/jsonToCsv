@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.jsonToCsv.JsonToCsvConsts.CONFIG_FILE_NAME;
 
@@ -39,12 +41,14 @@ public class Config {
 
     private void readPairsParameter(Properties properties, String paramName, Map<String, String> mapOfPairs) {
         String pairString = properties.getProperty(paramName);
+        splitIntoPairs(pairString, "][", ",", true);
+
         if (!pairString.startsWith("[") || !pairString.endsWith("]") ) {
             throw new IllegalArgumentException(paramName + " must use square brackets for items");
         }
 
         pairString = pairString.substring(1, pairString.length() - 2);
-        mapOfPairs = Splitter.on("][").withKeyValueSeparator(",").split(pairString);
+        mapOfPairs = Splitter.on("\\]\\[").withKeyValueSeparator("\\,").split(pairString);
     }
 
     private static InputStream CreateConfigInputStream() {
@@ -63,6 +67,11 @@ public class Config {
             pairsString = pairsString.substring(1, pairsString.length() - 2);
         }
 
+        var list =
+                Stream.of(pairsString.split(pairDelimiter, 1))
+                .collect(Collectors.toList())
+                .stream();
+
         var pairs = new HashMap<String, String>();
 
         int afterKeyIndex = getNextIndexByDelimiter(pairsString, itemsDelimiter);
@@ -70,7 +79,7 @@ public class Config {
         int afterValueIndex = getNextIndexByDelimiter(pairsString, pairDelimiter);
         String value = pairsString.substring(afterKeyIndex, afterValueIndex);
         pairs.put(key, value);
-        pairsString = pairsString.substring(afterValueIndex)
+        //pairsString = pairsString.substring(afterValueIndex)
 
         return pairs;
     }
