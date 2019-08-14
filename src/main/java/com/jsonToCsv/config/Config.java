@@ -44,7 +44,7 @@ public class Config {
         }
 
         pairString = pairString.substring(1, pairString.length() - 2);
-        mapOfPairs = Splitter.on(",").withKeyValueSeparator("][").split(pairString);
+        mapOfPairs = Splitter.on("][").withKeyValueSeparator(",").split(pairString);
     }
 
     private static InputStream CreateConfigInputStream() {
@@ -58,4 +58,31 @@ public class Config {
             return loader.getResourceAsStream(CONFIG_FILE_NAME);
         }
     }
+    Map<String, String> splitIntoPairs(String pairsString, String pairDelimiter, String itemsDelimiter, boolean removeEdges) {
+        if (removeEdges) {
+            pairsString = pairsString.substring(1, pairsString.length() - 2);
+        }
+
+        var pairs = new HashMap<String, String>();
+
+        int afterKeyIndex = getNextIndexByDelimiter(pairsString, itemsDelimiter);
+        String key = pairsString.substring(0, afterKeyIndex);
+        int afterValueIndex = getNextIndexByDelimiter(pairsString, pairDelimiter);
+        String value = pairsString.substring(afterKeyIndex, afterValueIndex);
+        pairs.put(key, value);
+        pairsString = pairsString.substring(afterValueIndex)
+
+        return pairs;
+    }
+
+    int getNextIndexByDelimiter(String input, String delimiter) {
+        int nextIndex = input.indexOf(delimiter);
+        if (nextIndex == -1) {
+            nextIndex = input.length() - 1;
+        }
+
+        int updateNextIndex = nextIndex + delimiter.length();
+        return updateNextIndex < input.length() ? updateNextIndex : input.length() - 1;
+    }
+
 }
