@@ -29,8 +29,8 @@ public class Config {
             writeBomToCsv = Boolean.parseBoolean(properties.getProperty("csv.writebom"));
             rootElement = properties.getProperty("csv.rootElement");
 
-            readPairsParameter(properties, "csv.splitColumnNamesAndDelimiter", columnsToSplit);
-            readPairsParameter(properties, "csv.prefixAdditionForColumns", columnsPrefix);
+            columnsToSplit = readPairsParameter(properties, "csv.splitColumnNamesAndDelimiter");
+            columnsPrefix = readPairsParameter(properties, "csv.prefixAdditionForColumns");
         }
         catch (Exception e) {
             System.out.println("Error reading configuration: " + e.getMessage());
@@ -39,16 +39,13 @@ public class Config {
         System.out.println("Configuration: write bom: " + writeBomToCsv);
     }
 
-    private void readPairsParameter(Properties properties, String paramName, Map<String, String> mapOfPairs) {
+    private Map<String, String> readPairsParameter(Properties properties, String paramName) {
         String pairString = properties.getProperty(paramName);
-        splitIntoPairs(pairString, "][", ",", true);
-
         if (!pairString.startsWith("[") || !pairString.endsWith("]") ) {
             throw new IllegalArgumentException(paramName + " must use square brackets for items");
         }
 
-        pairString = pairString.substring(1, pairString.length() - 2);
-        mapOfPairs = Splitter.on("\\]\\[").withKeyValueSeparator("\\,").split(pairString);
+        return splitIntoPairs(pairString, "\\]\\[", "\\,", true);
     }
 
     private static InputStream CreateConfigInputStream() {
@@ -62,36 +59,17 @@ public class Config {
             return loader.getResourceAsStream(CONFIG_FILE_NAME);
         }
     }
+
     Map<String, String> splitIntoPairs(String pairsString, String pairDelimiter, String itemsDelimiter, boolean removeEdges) {
         if (removeEdges) {
-            pairsString = pairsString.substring(1, pairsString.length() - 2);
+            pairsString = pairsString.substring(1, pairsString.length() - 1);
         }
 
-        var list =
-                Stream.of(pairsString.split(pairDelimiter, 1))
-                .collect(Collectors.toList())
-                .stream();
+        var pairsMap = Stream.of(pairsString.split(pairDelimiter, 1))
+                        .collect(Collectors.toList())
+                        .stream()
+                        .collect(Collectors.toMap(x -> x.split(itemsDelimiter)[0], x -> x.split(itemsDelimiter)[1]));
 
-        var pairs = new HashMap<String, String>();
-
-        int afterKeyIndex = getNextIndexByDelimiter(pairsString, itemsDelimiter);
-        String key = pairsString.substring(0, afterKeyIndex);
-        int afterValueIndex = getNextIndexByDelimiter(pairsString, pairDelimiter);
-        String value = pairsString.substring(afterKeyIndex, afterValueIndex);
-        pairs.put(key, value);
-        //pairsString = pairsString.substring(afterValueIndex)
-
-        return pairs;
+        return pairsMap;
     }
-
-    int getNextIndexByDelimiter(String input, String delimiter) {
-        int nextIndex = input.indexOf(delimiter);
-        if (nextIndex == -1) {
-            nextIndex = input.length() - 1;
-        }
-
-        int updateNextIndex = nextIndex + delimiter.length();
-        return updateNextIndex < input.length() ? updateNextIndex : input.length() - 1;
-    }
-
 }
