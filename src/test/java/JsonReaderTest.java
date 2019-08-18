@@ -7,8 +7,99 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 
 public class JsonReaderTest {
+
+    @Test
+    public void jsonReader_fieldOnlyExistOnlyInMiddleElements_nullFieldsAreAddedToMissingElements() {
+        try {
+            Config config = new Config();
+            config.rootElement = "data";
+            JsonReader jsonReader = new JsonReader(config);
+
+            jsonReader.readFromString(
+                    "{\"data\" :" +
+                            "[{\"first\" : \"john\", \"last\" : \"wick\", \"pet\" : \"dog\"}, " +
+                            " {\"last\" : \"wick\", \"pet\" : \"dog\"}, " +
+                            " {\"first\" : \"john\", \"last\" : \"wick\", \"pet\" : \"dog\"}]}");
+
+            CsvData csvData = jsonReader.getCsvData();
+            assertTrue(csvData.getCsvRows().stream().allMatch(x -> x.size() == 3));
+            assertEquals("null", csvData.getCsvRows().get(1).get(0));
+
+        } catch (IOException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void jsonReader_fieldOnlyExistOnlyInLaterElements_nullFieldsAreAddedToPreviousElements() {
+        try {
+            Config config = new Config();
+            config.rootElement = "data";
+            JsonReader jsonReader = new JsonReader(config);
+
+            jsonReader.readFromString(
+                    "{\"data\" :" +
+                            "[{\"last\" : \"wick\", \"pet\" : \"dog\"}, " +
+                            " {\"last\" : \"wick\", \"pet\" : \"dog\"}, " +
+                            " {\"first\" : \"john\", \"last\" : \"wick\", \"pet\" : \"dog\"}]}");
+
+            CsvData csvData = jsonReader.getCsvData();
+            assertTrue(csvData.getCsvRows().stream().allMatch(x -> x.size() == 3));
+            assertEquals("null", csvData.getCsvRows().get(0).get(0));
+            assertEquals("null", csvData.getCsvRows().get(1).get(0));
+            assertEquals("john", csvData.getCsvRows().get(2).get(0));
+
+        } catch (IOException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void jsonReader_fieldOnlyExistOnlyInSecondElements_nullFieldsAreAddedToPreviousElements() {
+        try {
+            Config config = new Config();
+            config.rootElement = "data";
+            JsonReader jsonReader = new JsonReader(config);
+
+            jsonReader.readFromString(
+                    "{\"data\" :" +
+                            "[{\"last\" : \"wick\", \"pet\" : \"dog\"}, " +
+                            " {\"first\" : \"john\", \"last\" : \"wick\", \"pet\" : \"dog\"}]}");
+
+            CsvData csvData = jsonReader.getCsvData();
+            assertTrue(csvData.getCsvRows().stream().allMatch(x -> x.size() == 3));
+            assertEquals("null", csvData.getCsvRows().get(0).get(0));
+            assertEquals("john", csvData.getCsvRows().get(1).get(0));
+
+        } catch (IOException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void jsonReader_fieldOnlyExistOnlyInPreviousElements_nullFieldsAreAddedToLaterElements() {
+        try {
+            Config config = new Config();
+            config.rootElement = "data";
+            JsonReader jsonReader = new JsonReader(config);
+
+            jsonReader.readFromString(
+                    "{\"data\" :" +
+                            "[{\"first\" : \"john\", \"last\" : \"wick\", \"pet\" : \"dog\"}, " +
+                            " {\"last\" : \"wick\", \"pet\" : \"dog\"}]}");
+
+            CsvData csvData = jsonReader.getCsvData();
+            assertTrue(csvData.getCsvRows().stream().allMatch(x -> x.size() == 3));
+            assertEquals("john", csvData.getCsvRows().get(0).get(0));
+            assertEquals("null", csvData.getCsvRows().get(1).get(0));
+
+        } catch (IOException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
 
     @Test
     public void jsonReader_arrayIsAutoFilledWhenFirstArrayIsFiveElements_secondArrayIsFilledWithEmptyStrings() {
