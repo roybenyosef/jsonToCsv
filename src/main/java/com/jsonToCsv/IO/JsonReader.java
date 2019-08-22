@@ -125,11 +125,16 @@ public class JsonReader {
         String value = node.toString().replaceAll("^\"|\"$", "");
         value = sanitizeString(value);
         value = applyPrefix(name, value);
-        csvList.addAll(readMode == JSON_READ_MODE.VALUES ?
-                CreateValueToAdd(value, name) : CreateHeaderNameToAdd(value, name));
+
+        if (readMode == JSON_READ_MODE.VALUES) {
+            csvList.addAll(CreateValueToAdd(value, name));
+        }
+        else {
+            CreateHeaderNameToAdd(value, name, csvList);
+        }
     }
 
-    private List<String> CreateHeaderNameToAdd(String value, String name) {
+    private void CreateHeaderNameToAdd(String value, String name, List<String> csvList) {
         var processedData = new ArrayList<String>();
         if (!config.columnsToSplit.containsKey(name)) {
             processedData.add(name);
@@ -141,7 +146,7 @@ public class JsonReader {
         }
 
         if (headerToIndexCache.containsKey(processedData.get(0))) {
-            return new ArrayList<>();
+            return;
         }
 
         int nextHeaderIndex = csvData.getCsvHeaders().size();
@@ -149,7 +154,10 @@ public class JsonReader {
             headerToIndexCache.put(headerName, nextHeaderIndex++);
         }
 
-        return processedData;
+        processedData.stream().filter(String::isEmpty);
+        if (!processedData.isEmpty()) {
+            csvList.addAll(processedData);
+        }
     }
 
     private List<String> CreateValueToAdd(String value, String name) {
