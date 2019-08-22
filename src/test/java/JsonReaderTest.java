@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
@@ -112,7 +113,7 @@ public class JsonReaderTest {
             CsvData csvData = jsonReader.getCsvData();
             assertEquals(5, csvData.getCsvHeaders().size());
             assertEquals(2, csvData.getCsvRows().size());
-            assertEquals(2 * 5, csvData.getCsvRows().stream().mapToInt(i -> i.size()).sum());
+            assertEquals(2 * 5, csvData.getCsvRows().stream().mapToInt(List::size).sum());
 
             assertEquals("first-2", csvData.getCsvRows().get(1).get(0));
             assertEquals("second-2", csvData.getCsvRows().get(1).get(1));
@@ -136,7 +137,7 @@ public class JsonReaderTest {
             CsvData csvData = jsonReader.getCsvData();
             assertEquals(5, csvData.getCsvHeaders().size());
             assertEquals(2, csvData.getCsvRows().size());
-            assertEquals(2 * 5, csvData.getCsvRows().stream().mapToInt(i -> i.size()).sum());
+            assertEquals(2 * 5, csvData.getCsvRows().stream().mapToInt(List::size).sum());
 
             assertEquals("first-1", csvData.getCsvRows().get(0).get(0));
             assertEquals("second-1", csvData.getCsvRows().get(0).get(1));
