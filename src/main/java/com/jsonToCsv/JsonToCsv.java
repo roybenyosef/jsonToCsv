@@ -12,14 +12,13 @@ public class JsonToCsv {
 
     static private String jsonFile = "";
     static private String outputFile;
-    static private Config config;
 
     public static void main(String[] args) {
         try {
             System.out.println("Implementation version: 0.4-Snapshot");
             System.out.println("System encoding: " + java.nio.charset.Charset.defaultCharset());
             readCommandLineArgs(args);
-            config = new Config();
+            Config config = new Config();
             printWelcomeMessage();
 
             var jsonReader = new JsonReader(config);

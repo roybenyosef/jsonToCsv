@@ -9,12 +9,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+enum JSON_READ_MODE {
+    HEADERS,
+    VALUES
+}
+
 public class JsonReader {
 
     private CsvData csvData = new CsvData();
     private Config config;
-
     private Map<String, Integer> arrayColumnNameToMaxSize = new HashMap<>();
+    private Map<String, Integer> headerToIndexCache = new HashMap<>();
 
     public JsonReader(Config config) {
         this.config = config;
@@ -40,51 +45,52 @@ public class JsonReader {
     private void readJsonDoc(JsonNode jsonDoc) {
         System.out.println("Traversing json element: " + config.rootElement);
         JsonNode rootNode = jsonDoc.get(config.rootElement);
-        populateHeaders(rootNode, csvData.getCsvHeaders());
-        readJsonData(rootNode);
+        readJsonData(rootNode, JSON_READ_MODE.HEADERS);
+        readJsonData(rootNode, JSON_READ_MODE.VALUES);
     }
 
-    private void populateHeaders(JsonNode rootNode, List<String> headers) {
-        var firstJsonEntry = rootNode.elements().next();
-        readNode(firstJsonEntry, "", headers, false);
-    }
-
-    private void readJsonData(JsonNode rootNode) {
+    private void readJsonData(JsonNode rootNode, JSON_READ_MODE readMode) {
         var nodeIterator = rootNode.elements();
         while (nodeIterator.hasNext()) {
             List<String> csvRow = new ArrayList<>();
             var node = nodeIterator.next();
-            readNode(node, "", csvRow, true);
-            csvData.getCsvRows().add(csvRow);
+            readNode(node, "", csvRow, readMode);
+
+            if (readMode == JSON_READ_MODE.VALUES) {
+                csvData.getCsvRows().add(csvRow);
+            }
+            else {
+                csvData.getCsvHeaders().addAll(csvRow);
+            }
         }
     }
 
-    private void readNode(JsonNode node, String name, List<String> csvList, boolean writeValues) {
+    private void readNode(JsonNode node, String name, List<String> csvList, JSON_READ_MODE readMode) {
         if (node.isObject()) {
-            readJsonObject(node, name, csvList, writeValues);
+            readJsonObject(node, name, csvList, readMode);
         }
         else if (node.isArray()) {
-            readJsonArray(node, name, csvList, writeValues);
+            readJsonArray(node, name, csvList, readMode);
         }
         else {
-            readJsonValue(node, name, csvList, writeValues);
+            readJsonValue(node, name, csvList, readMode);
         }
     }
 
-    private void readJsonObject(JsonNode node, String name, List<String> csvList, boolean writeValues) {
+    private void readJsonObject(JsonNode node, String name, List<String> csvList, JSON_READ_MODE readMode) {
         var fields = node.fields();
         while (fields.hasNext()) {
             var field = fields.next();
             String prefixedName = name + (name.isEmpty() ? "" : "_");
-            readNode(field.getValue(), prefixedName + field.getKey(), csvList, writeValues);
+            readNode(field.getValue(), prefixedName + field.getKey(), csvList, readMode);
         }
     }
 
-    private void readJsonArray(JsonNode node, String name, List<String> csvList, boolean writeValues) {
+    private void readJsonArray(JsonNode node, String name, List<String> csvList, JSON_READ_MODE readMode) {
         Integer itemIndex = -1;
         for (var arrayItem : node) {
             itemIndex++;
-            readNode(arrayItem, name + itemIndex, csvList, writeValues);
+            readNode(arrayItem, name + itemIndex, csvList, readMode);
         }
 
         Integer maxArrayIndex = arrayColumnNameToMaxSize.get(name);
@@ -115,14 +121,15 @@ public class JsonReader {
         }
     }
 
-    private void readJsonValue(JsonNode node, String name, List<String> csvList, boolean writeValues) {
+    private void readJsonValue(JsonNode node, String name, List<String> csvList, JSON_READ_MODE readMode) {
         String value = node.toString().replaceAll("^\"|\"$", "");
         value = sanitizeString(value);
         value = applyPrefix(name, value);
-        csvList.addAll(writeValues ? CreateValueToAdd(value, name) : CreateNameToAdd(value, name));
+        csvList.addAll(readMode == JSON_READ_MODE.VALUES ?
+                CreateValueToAdd(value, name) : CreateHeaderNameToAdd(value, name));
     }
 
-    private List<String> CreateNameToAdd(String value, String name) {
+    private List<String> CreateHeaderNameToAdd(String value, String name) {
         var processedData = new ArrayList<String>();
         if (!config.columnsToSplit.containsKey(name)) {
             processedData.add(name);
@@ -132,6 +139,16 @@ public class JsonReader {
                 processedData.add(name + i);
             }
         }
+
+        if (headerToIndexCache.containsKey(processedData.get(0))) {
+            return new ArrayList<>();
+        }
+
+        int nextHeaderIndex = csvData.getCsvHeaders().size();
+        for(String headerName : processedData) {
+            headerToIndexCache.put(headerName, nextHeaderIndex++);
+        }
+
         return processedData;
     }
 

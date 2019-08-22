@@ -2,13 +2,11 @@ package com.jsonToCsv.IO;
 
 import com.jsonToCsv.JsonToCsvConsts;
 import com.jsonToCsv.config.Config;
-import com.jsonToCsv.dataObjects.*;
+import com.jsonToCsv.dataObjects.CsvData;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class CsvWriter {
@@ -45,13 +43,4 @@ public class CsvWriter {
                 .withNullString("null")
                 .withHeader(headers.toArray(new String[headers.size()]));
     }
-
-    private String extractTime(String dateTime) {
-        return dateTime.substring(0, dateTime.indexOf(' '));
-    }
-
-    private String extractDate(String dateTime) {
-        return dateTime.substring(dateTime.indexOf(' ') + 1);
-    }
-
 }

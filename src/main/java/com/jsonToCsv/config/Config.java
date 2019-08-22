@@ -65,11 +65,9 @@ public class Config {
             pairsString = pairsString.substring(1, pairsString.length() - 1);
         }
 
-        var pairsMap = Stream.of(pairsString.split(pairDelimiter, 1))
+        return Stream.of(pairsString.split(pairDelimiter, 1))
                         .collect(Collectors.toList())
                         .stream()
                         .collect(Collectors.toMap(x -> x.split(itemsDelimiter)[0], x -> x.split(itemsDelimiter)[1]));
-
-        return pairsMap;
     }
 }
