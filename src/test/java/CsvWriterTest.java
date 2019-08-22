@@ -45,6 +45,7 @@ public class CsvWriterTest {
         config.writeBomToCsv = true;
         config.rootElement = "data";
         config.columnsToSplit.put("data_time", " ");
+        config.columnsPrefix.put("extra_url", "https://stips.co.il/");
 
         JsonReader jsonReader = new JsonReader(config);
         jsonReader.readFromFile(jsonInputFilePath);
@@ -244,7 +245,7 @@ public class CsvWriterTest {
 
     @Test
     public void url_IsExpectedLink() {
-        assertColumn(34,"extra_url", "ask/7324927/%D7%90%D7%A0%D7%99-%D7%9E%D7%A8%D7%92%D7%99%D7%A9%D7%94-%D7%A9%D7%A2%D7%95%D7%A9%D7%99%D7%9D-%D7%A2%D7%9C%D7%99%D7%99-%D7%97%D7%A8%D7%9D");
+        assertColumn(34,"extra_url", config.columnsPrefix.get("extra_url") + "ask/7324927/%D7%90%D7%A0%D7%99-%D7%9E%D7%A8%D7%92%D7%99%D7%A9%D7%94-%D7%A9%D7%A2%D7%95%D7%A9%D7%99%D7%9D-%D7%A2%D7%9C%D7%99%D7%99-%D7%97%D7%A8%D7%9D");
     }
 
     @Test
