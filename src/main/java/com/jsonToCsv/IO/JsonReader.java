@@ -8,6 +8,7 @@ import com.jsonToCsv.dataObjects.CsvData;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 enum JSON_READ_MODE {
@@ -135,7 +136,7 @@ public class JsonReader {
         }
     }
 
-    private void populateHeadersRow(String value, String name, List<String> csvList) {
+    private void populateHeadersRow(String value, String name, List<String> headersRow) {
         var processedData = new ArrayList<String>();
         if (!config.columnsToSplit.containsKey(name)) {
             processedData.add(name);
@@ -150,17 +151,16 @@ public class JsonReader {
             return;
         }
 
-        int nextHeaderIndex = csvData.getCsvHeaders().size();
-        for(String headerName : processedData) {
-            headerToIndexCache.put(headerName, nextHeaderIndex++);
-        }
-
         var filteredData = processedData.stream()
-                .filter(String::isEmpty)
+                .filter(Predicate.not(String::isEmpty))
                 .collect(Collectors.toList());
 
         if (!filteredData.isEmpty()) {
-            csvList.addAll(filteredData);
+            int nextHeaderIndex = csvData.getCsvHeaders().size();
+            for(String headerName : processedData) {
+                headerToIndexCache.put(headerName, nextHeaderIndex++);
+            }
+            headersRow.addAll(filteredData);
         }
     }
 
