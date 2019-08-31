@@ -156,7 +156,7 @@ public class JsonReader {
                 .collect(Collectors.toList());
 
         if (!filteredData.isEmpty()) {
-            int nextHeaderIndex = csvData.getCsvHeaders().size();
+            int nextHeaderIndex = headerToIndexCache.size();
             for(String headerName : processedData) {
                 headerToIndexCache.put(headerName, nextHeaderIndex++);
             }
