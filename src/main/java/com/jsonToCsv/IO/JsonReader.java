@@ -104,7 +104,7 @@ public class JsonReader {
             maxArrayIndex = itemIndex;
             addEmptyColumnsToAddOtherRows(name, maxArrayIndex);
         }
-        else if (itemIndex < maxArrayIndex) {
+        else if (readMode == JSON_READ_MODE.VALUES && itemIndex < maxArrayIndex) {
             String[] arrayToAdd = new String[maxArrayIndex - itemIndex];
             Arrays.fill(arrayToAdd, "");
             csvList.addAll(Arrays.asList(arrayToAdd));
